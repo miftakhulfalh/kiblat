@@ -1,5 +1,6 @@
 import { Telegraf } from 'telegraf';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { JWT } from 'google-auth-library';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 
@@ -32,6 +33,15 @@ const kaabahCoordinates = {
 // Koordinat Ka'bah dalam desimal
 const latKabah = 21.422511;  // Updated to more precise value
 const lonKabah = 39.826181;  // Updated to more precise value
+
+// Ganti inisialisasi doc dengan:
+const serviceAccountAuth = new JWT({
+  email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
+  key: GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+});
+
+const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
 
 async function getLocationName(lat, lon) {
   try {
@@ -195,11 +205,7 @@ function getQiblaDeviation(azimuthDeg) {
 // Fungsi untuk menyimpan ke spreadsheet
 async function saveToSheet(rowData) {
   try {
-    await doc.useServiceAccountAuth({
-      client_email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    });
-    
+   
     await doc.loadInfo();
     const sheet = doc.sheetsByIndex[0];
     
