@@ -1,4 +1,10 @@
 export default async function handler(req, res) {
+  if (req.method !== 'GET') {
+    return res.status(405).send('Method Not Allowed');
+  }
+
+  console.log('Rashdul endpoint triggered');
+
   const chatId = 1476658503;
   const message = `
 🌞 *Rashdul Kiblat Hari Ini*
@@ -12,7 +18,7 @@ Gunakan ini untuk kalibrasi arah kiblat Anda.
   const url = `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`;
 
   try {
-    const result = await fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -24,11 +30,12 @@ Gunakan ini untuk kalibrasi arah kiblat Anda.
       })
     });
 
-    const json = await result.json();
-    console.log('Telegram API response:', json);
+    const result = await response.json();
+    console.log('Telegram response:', result);
+
     return res.status(200).send('Pesan dikirim');
   } catch (error) {
-    console.error('Gagal kirim pesan:', error);
+    console.error('Gagal kirim pesan ke Telegram:', error);
     return res.status(500).send('Gagal kirim');
   }
 }
