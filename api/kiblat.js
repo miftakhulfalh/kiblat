@@ -1,6 +1,12 @@
 import { Telegraf } from 'telegraf';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
-import { sheets } from '@googleapis/sheets';
+import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+
+// Load environment variables if running locally
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config();
+}
 
 // Config dari environment variables
 const {
@@ -11,9 +17,12 @@ const {
   GOOGLE_PRIVATE_KEY
 } = process.env;
 
+// Inisialisasi bot Telegram
+const bot = new Telegraf(BOT_TOKEN);
+
 // Inisialisasi Google Sheets
 const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
-const sheetsClient = sheets('v4');
+
 // Koordinat Ka'bah dalam format DMS
 const kaabahCoordinates = {
   lat: { d: 21, m: 25, s: 21.04 },  // Updated to more precise coordinates
@@ -33,45 +42,13 @@ async function getLocationName(lat, lon) {
     if (data.results && data.results.length > 0) {
       const components = data.results[0].components;
       const city = components.county || components.city || "Tidak Diketahui";
-      const state = components.state || "Tidak Diketahui";
+      const state = components.state || components.country || "Tidak Diketahui";
       return { city, state };
     }
     return { city: "Tidak Diketahui", state: "Tidak Diketahui" };
   } catch (error) {
     console.error("Error fetching location: " + error);
     return { city: "Error", state: "Error" };
-  }
-}
-
-function sendTelegramMessage(chatId, messageId, textMessage) {
-  const url = `${telegramApiUrl}/sendMessage`;
-  const data = {
-    chat_id: chatId,
-    text: textMessage,
-    reply_to_message_id: messageId,
-    parse_mode: 'HTML'
-  };
-
-  const options = {
-    method: 'post',
-    contentType: 'application/json',
-    payload: JSON.stringify(data),
-    muteHttpExceptions: true
-  };
-
-  try {
-    const response = UrlFetchApp.fetch(url, options);
-    const responseData = JSON.parse(response.getContentText());
-    
-    if (!responseData.ok) {
-      Logger.log('Telegram API Error: ' + JSON.stringify(responseData));
-      throw new Error(`Telegram API Error: ${responseData.description}`);
-    }
-    
-    return response;
-  } catch (error) {
-    Logger.log('Error sending message: ' + error);
-    throw error;
   }
 }
 
@@ -116,14 +93,14 @@ function calculateC(lon) {
     c = 360 - c;
   }
 
-  Logger.log(`Original longitude: ${lon}`);
-  Logger.log(`Adjusted longitude: ${adjustedLon}`);
-  Logger.log(`Calculated c value: ${c}`);
+  console.log(`Original longitude: ${lon}`);
+  console.log(`Adjusted longitude: ${adjustedLon}`);
+  console.log(`Calculated c value: ${c}`);
 
   return c;
 }
 
-// Fungsi untuk menghitung arah kiblat (menggunakan rumus original)
+// Fungsi untuk menghitung arah kiblat
 function arahKiblat(lat, lon) {
   // Mencari nilai a, b, c
   const a = 90 - lat;
@@ -157,15 +134,6 @@ function arahKiblat(lat, lon) {
   };
 }
 
-
-function getQiblaBaseDirection(BkiblatDeg) {
-  return BkiblatDeg >= 0 ? 'Utara' : 'Selatan';
-}
-
-function getQiblaDirection(lon) {
-  return lon > lonKabah ? 'Barat' : 'Timur';
-}
-
 function calculateAzimuth(kiblatDecimal, baseDirection, qiblaDirection) {
   let azimuthDeg;
   
@@ -188,7 +156,6 @@ function calculateAzimuth(kiblatDecimal, baseDirection, qiblaDirection) {
 
   return toDMS(azimuthDeg);
 }
-
 
 function getQiblaDeviation(azimuthDeg) {
   // Normalize azimuth to 0-360 range
@@ -225,62 +192,76 @@ function getQiblaDeviation(azimuthDeg) {
   };
 }
 
-
-async function handleKiblatCalculation(ctx, lat, lon, username, firstName, lastName) {
+// Fungsi untuk menyimpan ke spreadsheet
+async function saveToSheet(rowData) {
   try {
+    await doc.useServiceAccountAuth({
+      client_email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    });
+    
+    await doc.loadInfo();
+    const sheet = doc.sheetsByIndex[0];
+    
+    await sheet.addRow({
+      'Chat ID': rowData.chatId,
+      'Username': rowData.username,
+      'First Name': rowData.firstName,
+      'Last Name': rowData.lastName,
+      'Latitude': rowData.lat,
+      'Longitude': rowData.lon,
+      'Latitude DMS': rowData.latDMS,
+      'Longitude DMS': rowData.lonDMS,
+      'Kota': rowData.city,
+      'Negara': rowData.state,
+      'Arah Kiblat': rowData.kiblatDMS,
+      'Base Direction': rowData.baseDirection,
+      'Qibla Direction': rowData.qiblaDirection,
+      'Azimuth': rowData.azimuthDMS
+    });
+    
+    console.log('Data saved to spreadsheet successfully');
+  } catch (error) {
+    console.error('Error saving to spreadsheet:', error);
+  }
+}
+
+async function handleKiblatCalculation(ctx, lat, lon) {
+  try {
+    const { message } = ctx;
+    const chatId = message.chat.id;
+    const username = message.from.username || "Tidak Ada";
+    const firstName = message.from.first_name || "Tidak Ada";
+    const lastName = message.from.last_name || "Tidak Ada";
+    
     const kiblatResult = arahKiblat(lat, lon);
-    const { city, state } = getLocationName(lat, lon);
+    const locationInfo = await getLocationName(lat, lon);
     const latDMS = toDMS(Math.abs(lat));
     const lonDMS = toDMS(Math.abs(lon));
     
-    // Tentukan arah kiblat terlebih dahulu
+    // Tentukan arah mata angin
+    const latDirection = lat >= 0 ? 'N' : 'S';
+    const lonDirection = lon >= 0 ? 'E' : 'W';
+    
+    // Tentukan arah kiblat
     const qiblaDirection = getQiblaDirection(lon);
     const baseDirection = getQiblaBaseDirection(kiblatResult.decimal);
 
-    // Sekarang kita bisa menghitung azimuth dengan parameter yang benar
+    // Menghitung azimuth
     const azimuthResult = calculateAzimuth(
       kiblatResult.decimal,
       baseDirection,
       qiblaDirection
     );
 
-
-        // Calculate deviation
+    // Menghitung deviasi
     const azimuthDecimal = azimuthResult.d + (azimuthResult.m / 60) + (azimuthResult.s / 3600);
     const deviation = getQiblaDeviation(azimuthDecimal);
-
 
     // Nilai absolut untuk DMS kiblat
     const kiblatDMS = toDMS(Math.abs(kiblatResult.decimal));
 
-    // Save to spreadsheet
-// Fungsi untuk menyimpan ke spreadsheet
-async function saveToSheet(rowData) {
-  await doc.useServiceAccountAuth({
-    client_email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    private_key: GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-  });
-  
-  await doc.loadInfo();
-  const sheet = doc.sheetsByIndex[0];
-  
-  await sheet.addRow({
-    'Chat ID': rowData[0],
-    'Username': rowData[1],
-    'First Name': rowData[2],
-    'Last Name': rowData[3],
-      'Latitude': rowData[4],
-      'Longitude': rowData[5],
-      `${latDMS.d}° ${latDMS.m}' ${latDMS.s}" ${latDirection}`: rowData[6],
-      `${lonDMS.d}° ${lonDMS.m}' ${lonDMS.s}" ${lonDirection}`: rowData[7],
-      'Kota': rowData[8],
-      'Negara': rowData[9],
-      `${kiblatDMS.d}° ${kiblatDMS.m}' ${kiblatDMS.s}"`: rowData[10],
-       baseDirection,
-       qiblaDirection,
-      `${azimuthResult.d}° ${azimuthResult.m}' ${azimuthResult.s}"`
-  });
-}
+    // Format hasil perhitungan untuk pesan
     const messageReply = `
 <b>PERHITUNGAN ARAH KIBLAT</b>
 
@@ -289,7 +270,7 @@ Latitude
 Longitude
 ------------------   ${lon.toFixed(6)} (${lonDMS.d}° ${lonDMS.m}' ${lonDMS.s}" ${lonDirection})
 Lokasi Anda
-------------------   ${city}, ${state}
+------------------   ${locationInfo.city}, ${locationInfo.state}
 Latitude Ka'bah
 ------------------   ${kaabahCoordinates.lat.d}° ${kaabahCoordinates.lat.m}' ${kaabahCoordinates.lat.s}" N
 Longitude Ka'bah
@@ -301,48 +282,53 @@ Azimuth Kiblat
 Kecondongan
 ------------------   ${deviation.deviationDMS.d}° ${deviation.deviationDMS.m}' ${deviation.deviationDMS.s}" ke ${deviation.direction} dari arah ${deviation.baseDirection}`;
 
+    // Kirim pesan balasan
+    await ctx.replyWithHTML(messageReply.trim());
+    console.log('Calculation completed and message sent for coordinates: ' + lat + ', ' + lon);
 
-    // Send message and log response
-    sendTelegramMessage(chatId, messageId, messageReply.trim());
-    Logger.log('Calculation completed and message sent for coordinates: ' + lat + ', ' + lon);
-
-
+    // Simpan data ke spreadsheet
+    try {
+      await saveToSheet({
+        chatId,
+        username,
+        firstName,
+        lastName,
+        lat,
+        lon,
+        latDMS: `${latDMS.d}° ${latDMS.m}' ${latDMS.s}" ${latDirection}`,
+        lonDMS: `${lonDMS.d}° ${lonDMS.m}' ${lonDMS.s}" ${lonDirection}`,
+        city: locationInfo.city,
+        state: locationInfo.state,
+        kiblatDMS: `${kiblatDMS.d}° ${kiblatDMS.m}' ${kiblatDMS.s}"`,
+        baseDirection,
+        qiblaDirection,
+        azimuthDMS: `${azimuthResult.d}° ${azimuthResult.m}' ${azimuthResult.s}"`
+      });
+    } catch (error) {
+      console.error('Failed to save data to spreadsheet:', error);
+    }
     
   } catch (error) {
-    Logger.log('Error in handleKiblatCalculation: ' + error);
-    sendTelegramMessage(chatId, messageId, 'Maaf, terjadi kesalahan dalam perhitungan. Silakan coba lagi.');
+    console.error('Error in handleKiblatCalculation:', error);
+    await ctx.reply('Maaf, terjadi kesalahan dalam perhitungan. Silakan coba lagi.');
   }
 }
 
-
-function doPost(e) {
-  try {
-    const contents = JSON.parse(e.postData.contents);
-    const chatId = contents.message.chat.id;
-    const message = contents.message;
-    const messageId = message.message_id;
-
-    const from = message.from || {};
-    const username = from.username || "Tidak Ada";
-    const firstName = from.first_name || "Tidak Ada";
-    const lastName = from.last_name || "Tidak Ada";
-
-    Logger.log('Received message: ' + JSON.stringify(message));
-
-    bot.start((ctx) => {
+// Set up bot commands and handlers
+bot.start((ctx) => {
   const welcomeMessage = `
 Selamat datang di Perhitungan Arah Kiblat.
 
 Anda memiliki dua pilihan:
 1. Kirim lokasi Anda (gunakan fitur share location)
-2. Kirim koordinat manual dalam formatDMS:
+2. Kirim koordinat manual dalam format DMS:
    10° 30' 45" N, 20° 15' 30" E
    (pastikan menggunakan simbol ° untuk derajat)
 3. Kirim koordinat dalam format desimal:
    -0.022892, 109.338894`;
       
-    return ctx.reply(welcomeMessage, { parse_mode: 'HTML' });
-  });
+  return ctx.replyWithHTML(welcomeMessage);
+});
 
 bot.command('about', (ctx) => {
   const aboutMessage = `
@@ -351,7 +337,7 @@ cotan B = tan latitude Ka'bah + sin latitude tempat  / sin C - sin latitude temp
 Terima kasih telah menggunakan bot ini.
 Contact x.com/miftahelfalh`;
       
- return ctx.reply(aboutMessage);
+  return ctx.reply(aboutMessage);
 });
 
 // Handler untuk lokasi dan koordinat
@@ -361,49 +347,51 @@ bot.on('location', async (ctx) => {
 });
 
 bot.on('text', async (ctx) => {
-      console.error('Processing text message: ' + message.text);
-      
-      // Pattern untuk format DMS
-      const dmsPattern = /(\d+)\s*°\s*(\d+)\s*'\s*(\d+(?:\.\d+)?)\s*"\s*([NSns])\s*,\s*(\d+)\s*°\s*(\d+)\s*'\s*(\d+(?:\.\d+)?)\s*"\s*([EWew])/i;
-      
-      // Pattern untuk format desimal (menerima angka positif/negatif dengan koma atau titik sebagai pemisah)
-      const decimalPattern = /(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)/;
+  const message = ctx.message.text;
+  console.log('Processing text message:', message);
+  
+  // Pattern untuk format DMS
+  const dmsPattern = /(\d+)\s*°\s*(\d+)\s*'\s*(\d+(?:\.\d+)?)\s*"\s*([NSns])\s*,\s*(\d+)\s*°\s*(\d+)\s*'\s*(\d+(?:\.\d+)?)\s*"\s*([EWew])/i;
+  
+  // Pattern untuk format desimal
+  const decimalPattern = /(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)/;
 
-      if (dmsPattern.test(message.text)) {
-        const match = message.text.match(dmsPattern);
-        Logger.log('DMS format match: ' + JSON.stringify(match));
+  if (dmsPattern.test(message)) {
+    const match = message.match(dmsPattern);
+    console.log('DMS format match:', match);
 
-        const lat = dmsToDecimal(
-          parseFloat(match[1]), 
-          parseFloat(match[2]), 
-          parseFloat(match[3]), 
-          match[4].toUpperCase()
-        );
-        const lon = dmsToDecimal(
-          parseFloat(match[5]), 
-          parseFloat(match[6]), 
-          parseFloat(match[7]), 
-          match[8].toUpperCase()
-        );
+    const lat = dmsToDecimal(
+      parseFloat(match[1]), 
+      parseFloat(match[2]), 
+      parseFloat(match[3]), 
+      match[4].toUpperCase()
+    );
+    const lon = dmsToDecimal(
+      parseFloat(match[5]), 
+      parseFloat(match[6]), 
+      parseFloat(match[7]), 
+      match[8].toUpperCase()
+    );
 
-        Logger.log('Converted DMS coordinates: ' + lat + ', ' + lon);
-        handleKiblatCalculation(ctx, lat, lon, username, firstName, lastName);
-        });
-      
-      if (decimalPattern.test(message.text)) {
-        const match = message.text.match(decimalPattern);
-        Logger.log('Decimal format match: ' + JSON.stringify(match));
-        
-        const lat = Number(match[1]).toFixed(6);
-        const lon = Number(match[2]).toFixed(6);
-        
-        Logger.log('Rounded decimal coordinates: ' + lat + ', ' + lon);
-        handleKiblatCalculation(ctx, parseFloat(lat), parseFloat(lon), username, firstName, lastName);
-        return;
-      }
-    }
-
-    sendTelegramMessage(chatId, messageId, `
+    console.log('Converted DMS coordinates:', lat, lon);
+    await handleKiblatCalculation(ctx, lat, lon);
+    return;
+  }
+  
+  if (decimalPattern.test(message)) {
+    const match = message.match(decimalPattern);
+    console.log('Decimal format match:', match);
+    
+    const lat = parseFloat(match[1]);
+    const lon = parseFloat(match[2]);
+    
+    console.log('Parsed decimal coordinates:', lat, lon);
+    await handleKiblatCalculation(ctx, lat, lon);
+    return;
+  }
+  
+  // Jika format tidak valid
+  await ctx.replyWithHTML(`
 Format koordinat tidak valid. Silakan kirim lokasi atau koordinat dengan salah satu format berikut:
 
 1. Format DMS:
@@ -418,14 +406,31 @@ Format koordinat tidak valid. Silakan kirim lokasi atau koordinat dengan salah s
    -0.022892, 109.338894
    - Gunakan tanda minus (-) untuk latitude Selatan atau longitude Barat
    - Gunakan tanda koma (,) sebagai pemisah antara latitude dan longitude`);
+});
 
+// Handler untuk webhook Vercel
+export default async (req, res) => {
+  try {
+    if (req.method === 'POST') {
+      const update = req.body;
+      await bot.handleUpdate(update);
+    }
+    res.status(200).end('OK');
   } catch (error) {
-    Logger.log('Error in doPost: ' + error);
+    console.error('Webhook error:', error);
+    res.status(500).end('Internal Server Error');
   }
+};
+
+// Jika dijalankan di luar Vercel (development)
+if (process.env.NODE_ENV !== 'production') {
+  bot.launch().then(() => {
+    console.log('Bot started in polling mode');
+  }).catch(err => {
+    console.error('Failed to start bot:', err);
+  });
 }
 
-// Vercel handler
-export default async (req, res) => {
-  await bot.handleUpdate(req.body);
-  res.status(200).send('OK');
-};
+// Enable graceful stop
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
