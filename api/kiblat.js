@@ -361,14 +361,23 @@ bot.action('hitung_kiblat', async (ctx) => {
    • Desimal: <code>21.4225, 39.8262</code>`);
 });
 
-bot.action('about', (ctx) => {
-  const aboutMessage = `
+// Definisikan pesan di luar agar bisa digunakan di banyak handler
+const aboutMessage = `
 🤖 <b>Tentang Bot Kiblat</b>
 
 Perhitungan arah kiblat ini menggunakan rumus 
 cotan B = tan latitude Ka'bah + sin latitude tempat  / sin C - sin latitude tempat / tan C
 Terima kasih telah menggunakan bot ini.`;
-  
+
+const contactMessage = `
+📬 <b>Kontak Pengembang</b>
+
+Untuk pertanyaan atau masukan:
+🌐 Twitter: @miftahelfalh
+🛠 Github: https://github.com/miftakhulfalh`;
+
+
+bot.action('about', (ctx) => { 
   ctx.replyWithHTML(aboutMessage);
 });
 
@@ -377,14 +386,7 @@ bot.command('about', (ctx) => {
   ctx.replyWithHTML(aboutMessage);
 });
 
-bot.action('contact', (ctx) => {
-  const contactMessage = `
-📬 <b>Kontak Pengembang</b>
-
-Untuk pertanyaan atau masukan:
-🌐 Twitter: @miftahelfalh
-🛠 Github: https://github.com/miftakhulfalh`;
-  
+bot.action('contact', (ctx) => { 
   ctx.replyWithHTML(contactMessage);
 });
 
