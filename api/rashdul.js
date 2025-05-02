@@ -1,21 +1,32 @@
 export default async function handler(req, res) {
   const BOT_TOKEN = process.env.BOT_TOKEN;
-  const chatId = 1476658503; // ganti dengan hasil dari ctx.chat.id kamu
+  const chatId = 1476658503; // Panggil fungsi getChatId()
+  
   const message = `
-🌞 *Rashdul Kiblat Hari Ini*
+🌞 *Rashdul Kiblat Hari Ini*\n
 
-Sekarang matahari tepat di atas Ka'bah.
-Arah bayangan benda tegak lurus menunjukkan arah kiblat.
 
-Gunakan ini untuk kalibrasi arah kiblat Anda.
-`;
+🔍 Cara verifikasi:
+1. Tancapkan tongkat lurus
+2. Amati bayangan saat persis waktu di atas
+3. Arah bayangan = arah kiblat
+
+📅 *Jadwal Selanjutnya:*
+- 28 Mei 2024 (12:18 WIB)
+- 16 Juli 2024 (12:27 WIB)`;
 
   try {
     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    
     const payload = {
       chat_id: chatId,
       text: message,
       parse_mode: 'Markdown',
+      reply_markup: {
+        inline_keyboard: [
+          [{text: '📱 Buka Aplikasi', url: 'https://kiblat-bot.com'}]
+        ]
+      }
     };
 
     const response = await fetch(url, {
@@ -25,14 +36,30 @@ Gunakan ini untuk kalibrasi arah kiblat Anda.
     });
 
     const result = await response.json();
+    
     if (!result.ok) {
-      console.error('Telegram error:', result);
-      return res.status(500).json({ error: result.description });
+      console.error('Error Detail:', {
+        status: result.error_code,
+        message: result.description,
+        parameters: result.parameters
+      });
+      return res.status(500).json({ 
+        error: 'Gagal mengirim notifikasi',
+        debug: result 
+      });
     }
 
-    return res.status(200).json({ status: 'OK', telegram: result });
+    return res.status(200).json({ 
+      status: 'OK',
+      timestamp: new Date().toISOString(),
+      chat_info: result.result.chat
+    });
+    
   } catch (err) {
-    console.error('Fetch error:', err);
-    return res.status(500).json({ error: 'Gagal kirim' });
+    console.error('Full Error Stack:', err);
+    return res.status(500).json({
+      error: 'Internal Server Error',
+      details: err.message
+    });
   }
 }
