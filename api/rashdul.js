@@ -1,5 +1,6 @@
 export default async function handler(req, res) {
   const BOT_TOKEN = process.env.BOT_TOKEN;
+  console.log('TOKEN:', process.env.BOT_TOKEN);
   const chatId = 1476658503; // Panggil fungsi getChatId()
   
   const message = `
