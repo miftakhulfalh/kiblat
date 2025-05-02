@@ -2,11 +2,10 @@
   "name": "kiblat-bot",
   "version": "1.0.0",
   "description": "Bot Telegram untuk perhitungan arah kiblat",
-  "main": "kiblat.js",
   "type": "module",
   "scripts": {
-    "start": "node kiblat.js",
-    "dev": "NODE_ENV=development node kiblat.js"
+    "start": "node api/kiblat.js",
+    "dev": "NODE_ENV=development node api/kiblat.js"
   },
   "keywords": [
     "telegram",
