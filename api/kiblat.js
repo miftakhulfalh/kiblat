@@ -1,4 +1,5 @@
 import { Telegraf } from 'telegraf';
+import { Markup } from 'telegraf';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 import fetch from 'node-fetch';
@@ -324,24 +325,57 @@ bot.start((ctx) => {
 Selamat datang di Perhitungan Arah Kiblat.
 
 Anda memiliki tiga pilihan:
-1. Kirim lokasi Anda (gunakan fitur share location)
-2. Kirim koordinat manual dalam format DMS:
-   10° 30' 45" N, 20° 15' 30" E
-   (pastikan menggunakan simbol ° untuk derajat)
-3. Kirim koordinat dalam format desimal:
-   -0.022892, 109.338894`;
+1. Kirim lokasi Anda (gunakan tombol attachment/share location)
+2. Ketik koordinat manual dalam format:
+   • DMS: <code>21°25'21.0" N, 39°49'34.2" E</code>
+   • Desimal: <code>21.4225, 39.8262</code>`;
+    const keyboard = Markup.inlineKeyboard([
+    [
+      Markup.button.callback('🕋 Hitung Kiblat', 'hitung_kiblat'),
+    ],
+    [
+      Markup.button.callback('📚 Tentang Bot', 'about'),
+      Markup.button.callback('📞 Kontak', 'contact')
+    ]
+  ]);
       
-  return ctx.replyWithHTML(welcomeMessage);
+  return ctx.replyWithHTML(welcomeMessage, keyboard);
+});
+
+// Tambahkan handler untuk callback queries
+bot.action('hitung_kiblat', async (ctx) => {
+  await ctx.replyWithHTML(`Silakan pilih metode input:
+1. Kirim lokasi Anda (gunakan tombol attachment/share location)
+2. Ketik koordinat manual dalam format:
+   • DMS: <code>21°25'21.0" N, 39°49'34.2" E</code>
+   • Desimal: <code>21.4225, 39.8262</code>`);
+});
+
+bot.action('about', (ctx) => {
+  const aboutMessage = `
+🤖 <b>Tentang Bot Kiblat</b>
+
+Perhitungan arah kiblat ini menggunakan rumus 
+cotan B = tan latitude Ka'bah + sin latitude tempat  / sin C - sin latitude tempat / tan C
+Terima kasih telah menggunakan bot ini.`;
+  
+  ctx.replyWithHTML(aboutMessage);
 });
 
 bot.command('about', (ctx) => {
-  const aboutMessage = `
-Perhitungan arah kiblat ini menggunakan rumus 
-cotan B = tan latitude Ka'bah + sin latitude tempat  / sin C - sin latitude tempat / tan C
-Terima kasih telah menggunakan bot ini.
-Contact x.com/miftahelfalh`;
-      
+     
   return ctx.reply(aboutMessage);
+});
+
+bot.action('contact', (ctx) => {
+  const contactMessage = `
+📬 <b>Kontak Pengembang</b>
+
+Untuk pertanyaan atau masukan:
+🌐 Twitter: @miftahelfalh
+🛠 Github: https://github.com/miftakhulfalh`;
+  
+  ctx.replyWithHTML(contactMessage);
 });
 
 // Handler untuk lokasi dan koordinat
