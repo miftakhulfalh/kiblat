@@ -348,7 +348,7 @@ Anda memiliki tiga pilihan:
   .oneTime(false); // ditampilkan terus
 
   return ctx.replyWithHTML(welcomeMessage, keyboard).then(() => {
-    return ctx.reply('Menu utama:', replyKeyboard);
+    return ctx.reply(replyKeyboard);
   });
 });
 
