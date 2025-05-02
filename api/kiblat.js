@@ -472,6 +472,14 @@ Format koordinat tidak valid. Silakan kirim lokasi atau koordinat dengan salah s
    - Gunakan tanda koma (,) sebagai pemisah antara latitude dan longitude`);
 });
 
+import { jadwalkanRashdul } from './rashdul.js';
+
+// Ganti dengan chat ID kamu (untuk uji coba)
+const chatId = 1476658503; // ← bisa kamu ambil dari ctx.chat.id di perintah /start
+
+jadwalkanRashdul(bot, chatId);
+
+
 // Handler untuk webhook Vercel
 export default async (req, res) => {
   try {
