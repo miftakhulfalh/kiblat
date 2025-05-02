@@ -1,16 +1,19 @@
-// api/rashdul.js
-import schedule from 'node-schedule';
+// api/rashdul-trigger.js
+import { Telegraf } from 'telegraf';
 
-export function jadwalkanRashdul(bot, chatId) {
-  // Tanggal Rashdul Kiblat uji coba: 2 Mei 2025 pukul 13:55 WIB (UTC = 06:55)
-  const targetDate = new Date('2025-05-02T07:08:00.000Z');
+const bot = new Telegraf(process.env.BOT_TOKEN);
 
-  schedule.scheduleJob(targetDate, () => {
-    bot.telegram.sendMessage(chatId, `🧭 *Rashdul Kiblat Hari Ini!*
+export default async function handler(req, res) {
+  const chatId = 1476658503; // Ganti dengan chat ID kamu
+  await bot.telegram.sendMessage(chatId, `🧭 *Rashdul Kiblat Hari Ini!*
 
-Tepat pukul 13:55 WIB, matahari berada di atas Ka'bah.
+Tepat pukul 14:05 WIB, matahari berada di atas Ka'bah.
 Letakkan benda tegak dan arah bayangan menunjukkan arah kiblat.
 
 Selamat mengamati!`, { parse_mode: 'Markdown' });
-  });
-}
+
+  res.status(200).send('Pesan Rashdul Kiblat dikirim.');
+} catch (error) {
+   console.error('Gagal mengirim pesan:', error);
+   res.status(500).send('Gagal mengirim');
+ }
