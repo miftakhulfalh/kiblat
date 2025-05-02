@@ -1,0 +1,28 @@
+{
+  "name": "kiblat-bot",
+  "version": "1.0.0",
+  "description": "Bot Telegram untuk perhitungan arah kiblat",
+  "main": "kiblat.js",
+  "type": "module",
+  "scripts": {
+    "start": "node kiblat.js",
+    "dev": "NODE_ENV=development node kiblat.js"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "kiblat",
+    "arah kiblat"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "google-spreadsheet": "^4.1.1",
+    "node-fetch": "^3.3.2",
+    "telegraf": "^4.15.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
