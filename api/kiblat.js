@@ -319,7 +319,7 @@ bot.start((ctx) => {
   const welcomeMessage = `
 Selamat datang di Perhitungan Arah Kiblat.
 
-Anda memiliki dua pilihan:
+Anda memiliki tiga pilihan:
 1. Kirim lokasi Anda (gunakan fitur share location)
 2. Kirim koordinat manual dalam format DMS:
    10° 30' 45" N, 20° 15' 30" E
