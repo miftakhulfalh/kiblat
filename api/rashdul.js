@@ -3,7 +3,7 @@ import schedule from 'node-schedule';
 
 export function jadwalkanRashdul(bot, chatId) {
   // Tanggal Rashdul Kiblat uji coba: 2 Mei 2025 pukul 13:55 WIB (UTC = 06:55)
-  const targetDate = new Date('2025-05-02T07:05:00.000Z');
+  const targetDate = new Date('2025-05-02T07:08:00.000Z');
 
   schedule.scheduleJob(targetDate, () => {
     bot.telegram.sendMessage(chatId, `🧭 *Rashdul Kiblat Hari Ini!*
