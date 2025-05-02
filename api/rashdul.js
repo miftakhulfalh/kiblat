@@ -1,9 +1,5 @@
 export default async function handler(req, res) {
-  if (req.method !== 'GET') {
-    return res.status(405).send('Method Not Allowed');
-  }
-
-  console.log('Rashdul endpoint triggered');
+  console.log('🔔 Endpoint /api/rashdul dipanggil');
 
   const chatId = 1476658503;
   const message = `
@@ -15,27 +11,40 @@ Arah bayangan benda tegak lurus menunjukkan arah kiblat.
 Gunakan ini untuk kalibrasi arah kiblat Anda.
 `;
 
-  const url = `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`;
+  const token = process.env.BOT_TOKEN;
+
+  if (!token) {
+    console.error('❌ BOT_TOKEN tidak tersedia');
+    return res.status(500).send('Token tidak tersedia');
+  }
+
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
 
   try {
-    const response = await fetch(url, {
+    const telegramRes = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         chat_id: chatId,
         text: message,
-        parse_mode: 'Markdown'
-      })
+        parse_mode: 'Markdown',
+      }),
     });
 
-    const result = await response.json();
-    console.log('Telegram response:', result);
+    const result = await telegramRes.json();
 
-    return res.status(200).send('Pesan dikirim');
-  } catch (error) {
-    console.error('Gagal kirim pesan ke Telegram:', error);
+    console.log('✅ Respons dari Telegram:', result);
+
+    if (!result.ok) {
+      console.error('❌ Telegram error:', result.description);
+      return res.status(500).send('Gagal kirim ke Telegram');
+    }
+
+    return res.status(200).send('OK');
+  } catch (err) {
+    console.error('❌ Gagal kirim request ke Telegram:', err);
     return res.status(500).send('Gagal kirim');
   }
 }
