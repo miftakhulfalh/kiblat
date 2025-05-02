@@ -347,7 +347,7 @@ Anda memiliki tiga pilihan:
   .resize(true)
   .oneTime(false); // ditampilkan terus
 
-  return ctx.replyWithHTML(welcomeMessage, inlineKeyboard).then(() => {
+  return ctx.replyWithHTML(welcomeMessage, keyboard).then(() => {
     return ctx.reply('Menu utama:', replyKeyboard);
   });
 });
