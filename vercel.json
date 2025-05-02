@@ -2,15 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "kiblat.js",
+      "src": "api/kiblat.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/.*",
-      "dest": "/api/kiblat.js",
-      "methods": ["POST", "GET"]
+      "src": "/(.*)",
+      "dest": "/api/kiblat.js"
     }
   ],
   "env": {
