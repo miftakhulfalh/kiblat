@@ -339,7 +339,17 @@ Anda memiliki tiga pilihan:
     ]
   ]);
       
-  return ctx.replyWithHTML(welcomeMessage, keyboard);
+  // Reply keyboard (custom keyboard)
+  const replyKeyboard = Markup.keyboard([
+    ['Hitung Kiblat'], ['Tentang Bot','Kontak'],
+    [Markup.button.locationRequest('📍 Kirim Lokasi')]
+  ])
+  .resize(true)
+  .oneTime(false); // ditampilkan terus
+
+  return ctx.replyWithHTML(welcomeMessage, inlineKeyboard).then(() => {
+    return ctx.reply('Menu utama:', replyKeyboard);
+  });
 });
 
 // Tambahkan handler untuk callback queries
@@ -364,7 +374,7 @@ Terima kasih telah menggunakan bot ini.`;
 
 bot.command('about', (ctx) => {
      
-  return ctx.reply(aboutMessage);
+  ctx.replyWithHTML(aboutMessage);
 });
 
 bot.action('contact', (ctx) => {
@@ -375,6 +385,20 @@ Untuk pertanyaan atau masukan:
 🌐 Twitter: @miftahelfalh
 🛠 Github: https://github.com/miftakhulfalh`;
   
+  ctx.replyWithHTML(contactMessage);
+});
+
+bot.hears('Hitung Kiblat', (ctx) => {
+  ctx.replyWithHTML(`Silakan pilih metode input:
+1. Kirim lokasi Anda (gunakan tombol attachment/share location)
+2. Ketik koordinat manual dalam format:
+   • DMS: <code>21°25'21.0" N, 39°49'34.2" E</code>
+   • Desimal: <code>21.4225, 39.8262</code>`);
+});
+bot.hears('Tentang Bot', (ctx) => {
+  ctx.replyWithHTML(aboutMessage);
+});
+bot.hears('Kontak', (ctx) => {
   ctx.replyWithHTML(contactMessage);
 });
 
