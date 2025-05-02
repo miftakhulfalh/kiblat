@@ -3,7 +3,7 @@ import { Telegraf } from 'telegraf';
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 export default async function handler(req, res) {
-  const chatId = 123456789; // Ganti dengan chat ID kamu (bukan @username)
+  const chatId = 1476658503; // Ganti dengan chat ID kamu (bukan @username)
   const message = `
 🌞 *Rashdul Kiblat Hari Ini*
 
