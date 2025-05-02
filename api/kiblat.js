@@ -21,8 +21,6 @@ const {
 // Inisialisasi bot Telegram
 const bot = new Telegraf(BOT_TOKEN);
 
-// Inisialisasi Google Sheets
-const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
 
 // Koordinat Ka'bah dalam format DMS
 const kaabahCoordinates = {
