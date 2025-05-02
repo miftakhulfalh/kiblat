@@ -6,12 +6,7 @@
       "use": "@vercel/node"
     }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/api/kiblat.js"
-    }
-  ],
+
   "env": {
     "NODE_ENV": "production"
   }
