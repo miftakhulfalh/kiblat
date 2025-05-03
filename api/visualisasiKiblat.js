@@ -1,21 +1,22 @@
+// visualisasiKiblat.js
 import { createCanvas } from '@napi-rs/canvas';
 
 export function generateQiblaVisualization(azimuthDeg) {
-    const canvas = createCanvas(400, 460); // Tambahkan tinggi untuk keterangan
+    const canvas = createCanvas(400, 400);
     const ctx = canvas.getContext('2d');
-
+    
     // Background
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, 400, 460);
-
-    // Lingkaran kompas
+    ctx.fillRect(0, 0, 400, 400);
+    
+    // Lingkaran utama
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(200, 200, 150, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Garis arah kiblat
+    // Garis arah kiblat/azimuth
     const radians = (azimuthDeg - 90) * Math.PI / 180;
     ctx.strokeStyle = '#FF0000';
     ctx.lineWidth = 3;
@@ -27,34 +28,19 @@ export function generateQiblaVisualization(azimuthDeg) {
     );
     ctx.stroke();
 
-    // Label arah mata angin
+    // Label arah
     ctx.fillStyle = '#000000';
-    ctx.font = '16px sans-serif';
+    ctx.font = '20px Arial';
     ctx.textAlign = 'center';
-    const directions = ['Utara', 'Timur', 'Selatan', 'Barat'];
-    directions.forEach((label, i) => {
-        const angle = (i * Math.PI / 2) - Math.PI / 2;
+    ctx.textBaseline = 'middle'; // <-- Penyesuaian penting
+    ['Utara', 'Timur', 'Selatan', 'Barat'].forEach((label, i) => {
+        const angle = (i * Math.PI/2) - Math.PI/2;
         ctx.fillText(
             label,
             200 + Math.cos(angle) * 170,
-            200 + Math.sin(angle) * 170 + 6
+            200 + Math.sin(angle) * 170 // Dihapus +7
         );
     });
-
-    // Garis merah mini (legenda) di bawah
-    ctx.strokeStyle = '#FF0000';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(130, 430);
-    ctx.lineTo(170, 430);
-    ctx.stroke();
-
-    // Teks "Arah Kiblat Anda"
-    ctx.fillStyle = '#000000';
-    ctx.font = '16px sans-serif'; // Pastikan font dikenali
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('Arah Kiblat Anda', 180, 430);
 
     return canvas.toBuffer('image/png');
 }
