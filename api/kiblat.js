@@ -332,7 +332,7 @@ bot.start((ctx) => {
   const welcomeMessage = `
 Selamat datang di Perhitungan Arah Kiblat.
 
-Anda memiliki tiga pilihan:
+Anda memiliki dua pilihan:
 1. Kirim lokasi Anda (gunakan tombol attachment/share location)
 2. Ketik koordinat manual dalam format:
    • DMS: <code>21°25'21.0" N, 39°49'34.2" E</code>
