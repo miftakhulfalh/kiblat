@@ -1,78 +1,46 @@
-export const config = {
-  runtime: 'edge',
-};
+export default async function handler(req, res) {
+  console.log('🟡 Rashdul endpoint triggered');
 
-export default async function handler(req) {
-  const token = process.env.BOT_TOKEN;
-  
-  // Validasi environment variable
-  if (!token) {
-    console.error('BOT_TOKEN tidak terdefinisi');
-    return new Response('Server Error: Token tidak tersedia', { 
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+  const BOT_TOKEN = process.env.BOT_TOKEN;
+  const CHAT_ID = '1476658503'; // Ganti dengan chat ID kamu
+
+  if (!BOT_TOKEN) {
+    console.error('❌ BOT_TOKEN not found');
+    return res.status(500).send('Missing bot token');
   }
 
-  // Dapatkan chat_id dari database (contoh sederhana)
-  const chatId = 1476658503; // Implementasi fungsi ini
-  
   const message = `
-🌞 *Rashdul Kiblat Hari Ini*
+🧭 *Rashdul Kiblat Hari Ini*
 
-🔍 *Instruksi:*
-1. Cari tempat datar dan terbuka
-2. Tancapkan benda tegak lurus
-3. Arah bayangan = arah kiblat`;
+Sekarang matahari tepat di atas Ka'bah.
+Arah bayangan benda tegak lurus menunjukkan arah kiblat.
+
+Gunakan ini untuk kalibrasi arah kiblat Anda.
+  `;
 
   try {
-    const telegramRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    const telegramRes = await fetch(url, {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'User-Agent': 'Vercel-Edge-Function'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat_id: chatId,
+        chat_id: CHAT_ID,
         text: message,
-        parse_mode: 'Markdown',
-        disable_notification: false
-      }),
+        parse_mode: 'Markdown'
+      })
     });
 
     const result = await telegramRes.json();
-    
-    // Logging detail untuk debug
-    console.log('Telegram API Response:', JSON.stringify(result));
+    console.log('🟢 Telegram API response:', result);
 
     if (!result.ok) {
-      return new Response(JSON.stringify({
-        status: 'error',
-        error_code: result.error_code,
-        description: result.description
-      }), { 
-        status: 502,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      console.error('❌ Telegram error:', result.description);
+      return res.status(500).send('Telegram API error');
     }
 
-    return new Response(JSON.stringify({
-      status: 'success',
-      message_id: result.result.message_id
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-  } catch (error) {
-    console.error('Fatal Error:', error);
-    return new Response(JSON.stringify({
-      status: 'error',
-      error: error.message
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return res.status(200).send('OK');
+  } catch (err) {
+    console.error('❌ Telegram fetch failed:', err);
+    return res.status(500).send('Fetch failed');
   }
 }
-
