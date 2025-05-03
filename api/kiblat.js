@@ -480,45 +480,127 @@ Format koordinat tidak valid. Silakan kirim lokasi atau koordinat dengan salah s
    - Gunakan tanda koma (,) sebagai pemisah antara latitude dan longitude`);
 });
 
+// Fungsi untuk mendapatkan daftar ChatID unik dari spreadsheet
+async function getUniqueUserChatIds() {
+  try {
+    await doc.loadInfo();
+    const sheet = doc.sheetsByIndex[0]; // Menggunakan sheet yang sama dengan yang sudah ada
+    
+    const rows = await sheet.getRows();
+    
+    // Membuat Set untuk menyimpan ChatID unik
+    const uniqueChatIds = new Set();
+    
+    // Iterasi semua baris dan simpan ChatID yang unik
+    rows.forEach(row => {
+      const chatId = row['Chat ID'];
+      if (chatId) {
+        uniqueChatIds.add(chatId);
+      }
+    });
+    
+    console.log(`Ditemukan ${uniqueChatIds.size} pengguna unik untuk notifikasi Rashdul Kiblat`);
+    return [...uniqueChatIds]; // Konversi Set ke Array
+  } catch (error) {
+    console.error('Error mendapatkan daftar ChatIDs:', error);
+    return [];
+  }
+}
 
-// Handler untuk webhook Vercel
+// Fungsi untuk mengirim notifikasi Rashdul Kiblat ke semua pengguna
+async function sendRashdulKiblatNotifications() {
+  const chatIds = await getUniqueUserChatIds();
+  
+  if (chatIds.length === 0) {
+    console.log('Tidak ada pengguna untuk dikirim notifikasi');
+    return {
+      success: false,
+      message: 'Tidak ada pengguna untuk dikirim notifikasi'
+    };
+  }
+  
+  // Tanggal saat ini untuk pesan
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+  
+  const message = `
+🧭 *Rashdul Kiblat ${formattedDate}*
+
+Rashdul Kiblat (atau Istiwa A'zham) terjadi ketika matahari tepat berada di atas Ka'bah, sehingga bayangan benda tegak di tempat lain akan langsung mengarah ke Ka'bah. Ini adalah waktu terbaik untuk mengoreksi arah kiblat secara visual.
+
+Setiap tahun terjadi dua kali, yaitu:
+🔸 1. Tanggal 27-28 Mei
+Waktu: pukul 12:18 waktu Arab Saudi (UTC+3)
+→ pukul 16:18 WIB (UTC+7)
+
+🔸 2. Tanggal 15-16 Juli
+Waktu: pukul 12:27 waktu Arab Saudi (UTC+3)
+→ pukul 16:27 WIB (UTC+7)
+
+Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
+
+⏰ Waktu terbaik untuk pengukuran berkisar antara 5-10 menit setelah notifikasi ini.
+
+_Notifikasi otomatis dari Bot Arah Kiblat_
+  `;
+  
+  const results = {
+    success: 0,
+    failed: 0,
+    total: chatIds.length
+  };
+  
+  // Mengirim pesan ke setiap pengguna
+  for (const chatId of chatIds) {
+    try {
+      await bot.telegram.sendMessage(chatId, message, { 
+        parse_mode: 'Markdown',
+      });
+      console.log(`✅ Sukses mengirim ke ChatID: ${chatId}`);
+      results.success++;
+    } catch (error) {
+      console.error(`❌ Gagal mengirim ke ChatID: ${chatId}`, error.message);
+      results.failed++;
+    }
+    
+    // Delay sedikit untuk menghindari rate limit API Telegram
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  
+  return {
+    ...results,
+    message: `Berhasil mengirim ${results.success} dari ${results.total} notifikasi.`
+  };
+}
+
+// Handler untuk webhook Vercel - Modifikasi dari handler yang sudah ada
 export default async (req, res) => {
   try {
     // Cek jika ini adalah request untuk rashdul kiblat dari cronjob
     if (req.query && req.query.rashdul === '1') {
       console.log('🟢 Menjalankan Rashdul Kiblat dari cron');
       
-      // Gunakan token bot yang sudah ada di environment
-      const CHAT_ID = '1476658503'; // ganti dengan ID chat Anda
-      const message = `
-🧭 *Rashdul Kiblat Hari Ini*
-Rashdul Kiblat (atau Istiwa A'zham) terjadi ketika matahari tepat berada di atas Ka'bah, sehingga bayangan benda tegak di tempat lain akan langsung mengarah ke Ka'bah. Ini adalah waktu terbaik untuk mengoreksi arah kiblat secara visual.
-🔸 1. Tanggal 27 atau 28 Mei
-Tanggal: 27 atau 28 Mei
-(biasanya 27, tapi bisa bergeser satu hari tergantung tahun kabisat dan deklinasi)
-
-Waktu: pukul 12:18 waktu Arab Saudi (UTC+3)
-→ pukul 16:18 WIB (UTC+7)
-
-🔸 2. Tanggal 15 atau 16 Juli
-Tanggal: 15 atau 16 Juli
-
-Waktu: pukul 12:27 waktu Arab Saudi (UTC+3)
-→ pukul 16:27 WIB (UTC+7)
-*Cara kalibrasi dengan Kiblat Rasdul Kiblat*
-Letakkan benda tegak lurus pada tanggal dan jam tersebut kemudian lihat arah bayangannya.
-      `;
+      const result = await sendRashdulKiblatNotifications();
       
-      try {
-        // Kirim pesan menggunakan metode Telegraf (lebih konsisten dengan kode Anda)
-        await bot.telegram.sendMessage(CHAT_ID, message, { parse_mode: 'Markdown' });
-        console.log('📦 Notifikasi Rashdul Kiblat berhasil dikirim');
-        return res.status(200).send('Rashdul berhasil dikirim');
-      } catch (err) {
-        console.error('❌ Error saat kirim notifikasi Rashdul Kiblat:', err);
-        return res.status(500).send('Gagal kirim rashdul');
+      // Kirim response berdasarkan hasil
+      if (result.success > 0) {
+        return res.status(200).json({
+          status: 'success',
+          ...result
+        });
+      } else {
+        return res.status(400).json({
+          status: 'failed',
+          ...result
+        });
       }
     }
+
+    // Jika bukan request rashdul, proses sebagai webhook normal
     if (req.method === 'POST') {
       const update = req.body;
       await bot.handleUpdate(update);
