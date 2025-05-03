@@ -14,8 +14,24 @@
   ],
   "crons": [
     {
-      "path": "/api/rashdul",
-      "schedule": "42 5 3 5 *"
+      "path": "/api/kiblat?rashdul=1",
+      "schedule": "50 9 3 5 *"   // 🔁 Uji coba 3 Mei 2025, 16:50 WIB
+    },
+    {
+      "path": "/api/kiblat?rashdul=1",
+      "schedule": "18 9 27 5 *"
+    },
+    {
+      "path": "/api/kiblat?rashdul=1",
+      "schedule": "18 9 28 5 *"
+    },
+    {
+      "path": "/api/kiblat?rashdul=1",
+      "schedule": "27 9 15 7 *"
+    },
+    {
+      "path": "/api/kiblat?rashdul=1",
+      "schedule": "27 9 16 7 *"
     }
   ],
   "env": {
