@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/kiblat.js",
+      "src": "api/*.js",
       "use": "@vercel/node"
     }
   ],
@@ -10,6 +10,12 @@
     {
       "src": "/(.*)",
       "dest": "/api/kiblat.js"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/rashdul",
+      "schedule": "42 5 3 5 *"
     }
   ],
   "env": {
