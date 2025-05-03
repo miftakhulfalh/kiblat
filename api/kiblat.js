@@ -480,54 +480,38 @@ Format koordinat tidak valid. Silakan kirim lokasi atau koordinat dengan salah s
    - Gunakan tanda koma (,) sebagai pemisah antara latitude dan longitude`);
 });
 
-// Fungsi untuk mendapatkan daftar ChatID dari sheet "ChatIds"
 async function getChatIdsFromDedicatedSheet() {
   try {
     await doc.loadInfo();
-    console.log(`Loaded spreadsheet: ${doc.title}`);
     
     // Cari sheet dengan nama "ChatIds"
-    let chatIdSheet;
-    
-    // Coba cari sheet dengan nama "ChatIds"
-    for (const sheet of Object.values(doc.sheetsById)) {
-      if (sheet.title === "ChatIds") {
-        chatIdSheet = sheet;
-        break;
-      }
-    }
-    
-    // Jika tidak ditemukan, gunakan sheet kedua (index 1)
-    if (!chatIdSheet) {
-      console.log('Sheet "ChatIds" tidak ditemukan, menggunakan sheet index 1');
-      chatIdSheet = doc.sheetsByIndex[1];
-    }
-    
-    console.log(`Using sheet: ${chatIdSheet.title}`);
-    
-    // Ambil semua baris
-    await chatIdSheet.loadCells();
+    const chatIdSheet = doc.sheetsByTitle['ChatIds'] || doc.sheetsByIndex[1];
+    console.log(`Menggunakan sheet: "${chatIdSheet.title}"`);
+
+    // Pastikan header kolom sesuai
+    await chatIdSheet.loadHeaderRow();
+    const header = chatIdSheet.headerValues;
+    console.log('Header sheet:', header);
+
+    // Ambil semua baris (termasuk header)
     const rows = await chatIdSheet.getRows();
-    console.log(`Fetched ${rows.length} rows from ChatIds sheet`);
-    
-    // Ambil ChatID dari kolom pertama
+    console.log(`Jumlah baris: ${rows.length}`);
+
+    // Ambil ChatID dari kolom pertama (asumsi kolom pertama adalah 'Chat ID')
     const chatIds = [];
     
-    for (let i = 0; i < rows.length; i++) {
-      // Dapatkan nilai dari kolom pertama (A)
-      const chatId = rows[i]._rawData[0]; // Mengakses data mentah kolom pertama
-      
+    for (const row of rows) {
+      const chatId = row[header[0]]; // Akses menggunakan nama header
       if (chatId && chatId.trim() !== '') {
+        console.log(`Menemukan Chat ID: ${chatId}`);
         chatIds.push(chatId.trim());
-        console.log(`Added Chat ID: ${chatId} from row ${i + 1}`);
       }
     }
-    
-    console.log(`Found ${chatIds.length} Chat IDs for notification`);
+
+    console.log(`Total Chat ID valid: ${chatIds.length}`);
     return chatIds;
   } catch (error) {
-    console.error('Error getting Chat IDs from dedicated sheet:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
+    console.error('Error mengambil Chat IDs:', error);
     return [];
   }
 }
