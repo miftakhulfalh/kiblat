@@ -335,7 +335,7 @@ Selamat datang di Perhitungan Arah Kiblat.
 Anda memiliki dua pilihan:
 1. Kirim lokasi Anda (gunakan tombol attachment/share location)
 2. Ketik koordinat manual dalam format:
-   • DMS: <code>6°59'30.8" N, 110°20'57.4" E</code>
+   • DMS: <code>6°59'30.8" S, 110°20'57.4" E</code>
    • Desimal: <code>-6.9919, 110.3493</code>`;
     const keyboard = Markup.inlineKeyboard([
     [
@@ -365,7 +365,7 @@ bot.action('hitung_kiblat', async (ctx) => {
   await ctx.replyWithHTML(`Silakan pilih metode input:
 1. Kirim lokasi Anda (gunakan tombol attachment/share location)
 2. Ketik koordinat manual dalam format:
-   • DMS: <code>6°59'30.8" N, 110°20'57.4" E</code>
+   • DMS: <code>6°59'30.8" S, 110°20'57.4" E</code>
    • Desimal: <code>-6.9919, 110.3493</code>`);
 });
 
@@ -402,7 +402,7 @@ bot.hears('Hitung Kiblat', (ctx) => {
   ctx.replyWithHTML(`Silakan pilih metode input:
 1. Kirim lokasi Anda (gunakan tombol attachment/share location)
 2. Ketik koordinat manual dalam format:
-   • DMS: <code>6°59'30.8" N, 110°20'57.4" E</code>
+   • DMS: <code>6°59'30.8" S, 110°20'57.4" E</code>
    • Desimal: <code>-6.9919, 110.3493</code>`);
 });
 bot.hears('Tentang Bot', (ctx) => {
@@ -467,7 +467,7 @@ bot.on('text', async (ctx) => {
 Format koordinat tidak valid. Silakan kirim lokasi atau koordinat dengan salah satu format berikut:
 
 1. Format DMS:
-   10° 30' 45.5" N, 20° 15' 30.0" E
+   <code>6°59'30.8" S, 110°20'57.4" E</code>
    Pastikan menggunakan:
    - Simbol derajat (°)
    - Tanda petik satu (')
@@ -475,7 +475,8 @@ Format koordinat tidak valid. Silakan kirim lokasi atau koordinat dengan salah s
    - Arah mata angin (N/S untuk latitude, E/W untuk longitude)
 
 2. Format Desimal:
-   -6.9919, 110.3493
+   <code>-6.9919, 110.3493</code>
+   Pastikan menggunakan:
    - Gunakan tanda minus (-) untuk latitude Selatan atau longitude Barat
    - Gunakan tanda koma (,) sebagai pemisah antara latitude dan longitude`);
 });
