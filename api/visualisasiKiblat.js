@@ -16,7 +16,7 @@ export function generateQiblaVisualization(azimuthDeg) {
     ctx.arc(200, 200, 150, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Garis arah kiblat
+    // Garis arah kiblat/azimuth
     const radians = (azimuthDeg - 90) * Math.PI / 180; // Sesuaikan sudut untuk sistem koordinat canvas
     ctx.strokeStyle = '#FF0000';
     ctx.lineWidth = 3;
