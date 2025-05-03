@@ -29,7 +29,7 @@ export function generateQiblaVisualization(azimuthDeg) {
 
     // Label arah mata angin
     ctx.fillStyle = '#000000';
-    ctx.font = '16px Arial';
+    ctx.font = '16px sans-serif';
     ctx.textAlign = 'center';
     const directions = ['Utara', 'Timur', 'Selatan', 'Barat'];
     directions.forEach((label, i) => {
@@ -51,9 +51,10 @@ export function generateQiblaVisualization(azimuthDeg) {
 
     // Teks "Arah Kiblat Anda"
     ctx.fillStyle = '#000000';
-    ctx.font = '16px Arial';
+    ctx.font = '16px sans-serif'; // Pastikan font dikenali
     ctx.textAlign = 'left';
-    ctx.fillText('Arah Kiblat Anda', 180, 435);
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Arah Kiblat Anda', 180, 430);
 
     return canvas.toBuffer('image/png');
 }
