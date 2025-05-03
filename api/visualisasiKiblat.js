@@ -1,5 +1,7 @@
 // visualisasiKiblat.js
-import { createCanvas, registerFont } from '@napi-rs/canvas';
+import canvas from '@napi-rs/canvas';
+const { createCanvas, registerFont } = canvas;
+
 registerFont('./fonts/arial.ttf', { family: 'Arial' });
 
 export function generateQiblaVisualization(azimuthDeg) {
