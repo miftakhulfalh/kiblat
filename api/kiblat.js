@@ -555,7 +555,9 @@ async function sendRashdulKiblatNotifications() {
   const message = `
 🧭 *Rashdul Kiblat ${formattedDate}*
 
-Sekarang matahari tepat di atas Ka'bah. Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
+Rashdul Kiblat (atau Istiwa A'zham) terjadi ketika matahari tepat berada di atas Ka'bah, sehingga bayangan benda tegak di tempat lain akan langsung mengarah ke Ka'bah. Ini adalah waktu terbaik untuk mengoreksi arah kiblat secara visual.
+
+Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
 
 ⏰ Waktu terbaik untuk pengukuran berkisar antara 5-10 menit setelah notifikasi ini.
 
@@ -612,7 +614,9 @@ export default async (req, res) => {
           year: 'numeric'
         })}*
 
-Sekarang matahari tepat di atas Ka'bah. Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
+Rashdul Kiblat (atau Istiwa A'zham) terjadi ketika matahari tepat berada di atas Ka'bah, sehingga bayangan benda tegak di tempat lain akan langsung mengarah ke Ka'bah. Ini adalah waktu terbaik untuk mengoreksi arah kiblat secara visual.
+
+Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
 
 ⏰ Waktu terbaik untuk pengukuran berkisar antara 5-10 menit setelah notifikasi ini.
 
