@@ -492,8 +492,21 @@ export default async (req, res) => {
       const CHAT_ID = '1476658503'; // ganti dengan ID chat Anda
       const message = `
 🧭 *Rashdul Kiblat Hari Ini*
+Rashdul Kiblat (atau Istiwa A'zham) terjadi ketika matahari tepat berada di atas Ka'bah, sehingga bayangan benda tegak di tempat lain akan langsung mengarah ke Ka'bah. Ini adalah waktu terbaik untuk mengoreksi arah kiblat secara visual.
+🔸 1. Tanggal 27 atau 28 Mei
+Tanggal: 27 atau 28 Mei
+(biasanya 27, tapi bisa bergeser satu hari tergantung tahun kabisat dan deklinasi)
 
-Sekarang matahari tepat di atas Ka'bah. Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
+Waktu: pukul 12:18 waktu Arab Saudi (UTC+3)
+→ pukul 16:18 WIB (UTC+7)
+
+🔸 2. Tanggal 15 atau 16 Juli
+Tanggal: 15 atau 16 Juli
+
+Waktu: pukul 12:27 waktu Arab Saudi (UTC+3)
+→ pukul 16:27 WIB (UTC+7)
+*Cara kalibrasi dengan Kiblat Rasdul Kiblat*
+Letakkan benda tegak lurus pada tanggal dan jam tersebut kemudian lihat arah bayangannya.
       `;
       
       try {
