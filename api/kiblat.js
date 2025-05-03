@@ -484,6 +484,28 @@ Format koordinat tidak valid. Silakan kirim lokasi atau koordinat dengan salah s
 // Handler untuk webhook Vercel
 export default async (req, res) => {
   try {
+    // Cek jika ini adalah request untuk rashdul kiblat dari cronjob
+    if (req.query && req.query.rashdul === '1') {
+      console.log('🟢 Menjalankan Rashdul Kiblat dari cron');
+      
+      // Gunakan token bot yang sudah ada di environment
+      const CHAT_ID = '1476658503'; // ganti dengan ID chat Anda
+      const message = `
+🧭 *Rashdul Kiblat Hari Ini*
+
+Sekarang matahari tepat di atas Ka'bah. Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
+      `;
+      
+      try {
+        // Kirim pesan menggunakan metode Telegraf (lebih konsisten dengan kode Anda)
+        await bot.telegram.sendMessage(CHAT_ID, message, { parse_mode: 'Markdown' });
+        console.log('📦 Notifikasi Rashdul Kiblat berhasil dikirim');
+        return res.status(200).send('Rashdul berhasil dikirim');
+      } catch (err) {
+        console.error('❌ Error saat kirim notifikasi Rashdul Kiblat:', err);
+        return res.status(500).send('Gagal kirim rashdul');
+      }
+    }
     if (req.method === 'POST') {
       const update = req.body;
       await bot.handleUpdate(update);
