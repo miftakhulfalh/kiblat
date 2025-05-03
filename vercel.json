@@ -15,11 +15,11 @@
   "crons": [
     {
       "path": "/api/kiblat?rashdul=1",
-      "schedule": "50 9 3 5 *"
+      "schedule": "18 9 27 5 *"
     },
     {
       "path": "/api/kiblat?rashdul=1",
-      "schedule": "18 9 27 5 *"
+      "schedule": "27 9 15 7 *"
     }
   ],
   "env": {
