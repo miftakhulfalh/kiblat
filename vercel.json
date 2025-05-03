@@ -15,9 +15,9 @@
   "env": {
     "NODE_ENV": "production"
   },
-   "functions": {
-   "api/*.js": {
-     "includeFiles": "node_modules/@napi-rs/canvas/**"
+  "functions": {
+    "api/*.js": {
+      "includeFiles": "node_modules/@napi-rs/canvas/**"
     }
   }
 }
