@@ -381,7 +381,7 @@ const contactMessage = `
 📬 <b>Kontak Pengembang</b>
 
 Untuk pertanyaan atau masukan:
-🌐 Twitter: @miftahelfalh
+🌐 Twitter: x.com/miftahelfalh
 🛠 Github: https://github.com/miftakhulfalh`;
 
 
