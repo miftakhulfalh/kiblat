@@ -1,7 +1,3 @@
-export const config = {
-  runtime: 'nodejs' // 👈 pastikan ini ditulis
-};
-
 export default async function handler(req, res) {
   console.log('🟡 Rashdul endpoint triggered');
 
