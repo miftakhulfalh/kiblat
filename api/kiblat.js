@@ -335,8 +335,8 @@ Selamat datang di Perhitungan Arah Kiblat.
 Anda memiliki dua pilihan:
 1. Kirim lokasi Anda (gunakan tombol attachment/share location)
 2. Ketik koordinat manual dalam format:
-   • DMS: <code>21°25'21.0" N, 39°49'34.2" E</code>
-   • Desimal: <code>21.4225, 39.8262</code>`;
+   • DMS: <code>6°59'30.8" N, 110°20'57.4" E</code>
+   • Desimal: <code>-6.9919, 110.3493</code>`;
     const keyboard = Markup.inlineKeyboard([
     [
       Markup.button.callback('🕋 Hitung Kiblat', 'hitung_kiblat'),
