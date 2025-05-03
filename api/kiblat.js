@@ -4,6 +4,7 @@ import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
+import { generateQiblaVisualization } from './visualisasiKiblat.js';
 
 // Load environment variables if running locally
 if (process.env.NODE_ENV !== 'production') {
@@ -291,6 +292,13 @@ Kecondongan
     await ctx.replyWithHTML(messageReply.trim());
     console.log('Calculation completed and message sent for coordinates: ' + lat + ', ' + lon);
 
+  // Setelah ctx.replyWithHTML(messageReply.trim());
+  const imageBuffer = generateQiblaVisualization(azimuthDecimal);
+  await ctx.replyWithPhoto({ source: imageBuffer }, {
+      caption: `🕋 Visualisasi Arah Kiblat\nAzimuth: ${azimuthResult.d}° ${azimuthResult.m}' ${azimuthResult.s}"`,
+      parse_mode: 'HTML'
+  });
+    
     // Simpan data ke spreadsheet
     try {
       await saveToSheet({
