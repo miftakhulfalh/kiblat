@@ -365,8 +365,8 @@ bot.action('hitung_kiblat', async (ctx) => {
   await ctx.replyWithHTML(`Silakan pilih metode input:
 1. Kirim lokasi Anda (gunakan tombol attachment/share location)
 2. Ketik koordinat manual dalam format:
-   • DMS: <code>21°25'21.0" N, 39°49'34.2" E</code>
-   • Desimal: <code>21.4225, 39.8262</code>`);
+   • DMS: <code>6°59'30.8" N, 110°20'57.4" E</code>
+   • Desimal: <code>-6.9919, 110.3493</code>`);
 });
 
 // Definisikan pesan di luar agar bisa digunakan di banyak handler
@@ -402,8 +402,8 @@ bot.hears('Hitung Kiblat', (ctx) => {
   ctx.replyWithHTML(`Silakan pilih metode input:
 1. Kirim lokasi Anda (gunakan tombol attachment/share location)
 2. Ketik koordinat manual dalam format:
-   • DMS: <code>21°25'21.0" N, 39°49'34.2" E</code>
-   • Desimal: <code>21.4225, 39.8262</code>`);
+   • DMS: <code>6°59'30.8" N, 110°20'57.4" E</code>
+   • Desimal: <code>-6.9919, 110.3493</code>`);
 });
 bot.hears('Tentang Bot', (ctx) => {
   ctx.replyWithHTML(aboutMessage);
@@ -475,7 +475,7 @@ Format koordinat tidak valid. Silakan kirim lokasi atau koordinat dengan salah s
    - Arah mata angin (N/S untuk latitude, E/W untuk longitude)
 
 2. Format Desimal:
-   -0.022892, 109.338894
+   -6.9919, 110.3493
    - Gunakan tanda minus (-) untuk latitude Selatan atau longitude Barat
    - Gunakan tanda koma (,) sebagai pemisah antara latitude dan longitude`);
 });
@@ -545,6 +545,15 @@ async function sendRashdulKiblatNotifications() {
 
 Rashdul Kiblat (atau Istiwa A'zham) terjadi ketika matahari tepat berada di atas Ka'bah, sehingga bayangan benda tegak di tempat lain akan langsung mengarah ke Ka'bah. Ini adalah waktu terbaik untuk mengoreksi arah kiblat secara visual.
 
+Setiap tahun terjadi dua kali, yaitu:
+🔸 1. Tanggal 27-28 Mei
+Waktu: pukul 12:18 waktu Arab Saudi (UTC+3)
+→ pukul 16:18 WIB (UTC+7)
+
+🔸 2. Tanggal 15-16 Juli
+Waktu: pukul 12:27 waktu Arab Saudi (UTC+3)
+→ pukul 16:27 WIB (UTC+7)
+
 Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
 
 ⏰ Waktu terbaik untuk pengukuran berkisar antara 5-10 menit setelah notifikasi ini.
@@ -603,6 +612,15 @@ export default async (req, res) => {
         })}*
 
 Rashdul Kiblat (atau Istiwa A'zham) terjadi ketika matahari tepat berada di atas Ka'bah, sehingga bayangan benda tegak di tempat lain akan langsung mengarah ke Ka'bah. Ini adalah waktu terbaik untuk mengoreksi arah kiblat secara visual.
+
+Setiap tahun terjadi dua kali, yaitu:
+🔸 1. Tanggal 27-28 Mei
+Waktu: pukul 12:18 waktu Arab Saudi (UTC+3)
+→ pukul 16:18 WIB (UTC+7)
+
+🔸 2. Tanggal 15-16 Juli
+Waktu: pukul 12:27 waktu Arab Saudi (UTC+3)
+→ pukul 16:27 WIB (UTC+7)
 
 Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
 
