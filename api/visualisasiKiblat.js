@@ -25,24 +25,22 @@ export function generateQiblaVisualization(azimuthDeg) {
     ctx.lineTo(200 + Math.cos(radians) * 140, 200 + Math.sin(radians) * 140);
     ctx.stroke();
 
-    // Label arah mata angin
+    // Label arah mata angin (tanpa rotasi)
     ctx.fillStyle = '#000000';
-    ctx.font = 'bold 20px "Arial", sans-serif'; // Gunakan fallback font
+    ctx.font = '18px sans-serif'; // Gunakan font generik
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    const directions = ['Utara', 'Timur', 'Selatan', 'Barat'];
-    directions.forEach((label, i) => {
-        const angle = (i * Math.PI/2) - Math.PI/2; // Sudut untuk 4 arah
-        const x = 200 + Math.cos(angle) * 160; // Radius diperkecil
-        const y = 200 + Math.sin(angle) * 160;
-        
-        // Tambah rotasi teks sesuai arah
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(angle + Math.PI/2); // Rotasi teks menghadap keluar
-        ctx.fillText(label, 0, 0);
-        ctx.restore();
+    // Posisi teks manual untuk 4 arah
+    const directions = [
+        { label: 'Utara', x: 200, y: 40 },   // Atas
+        { label: 'Timur', x: 360, y: 200 },  // Kanan
+        { label: 'Selatan', x: 200, y: 360 }, // Bawah
+        { label: 'Barat', x: 40, y: 200 }    // Kiri
+    ];
+    
+    directions.forEach(dir => {
+        ctx.fillText(dir.label, dir.x, dir.y);
     });
 
     return canvas.toBuffer('image/png');
