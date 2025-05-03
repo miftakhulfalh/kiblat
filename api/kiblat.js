@@ -480,42 +480,67 @@ Format koordinat tidak valid. Silakan kirim lokasi atau koordinat dengan salah s
    - Gunakan tanda koma (,) sebagai pemisah antara latitude dan longitude`);
 });
 
-// Fungsi untuk mendapatkan daftar ChatID unik dari spreadsheet
-async function getUniqueUserChatIds() {
+// Fungsi untuk mendapatkan daftar ChatID dari sheet "ChatIds"
+async function getChatIdsFromDedicatedSheet() {
   try {
     await doc.loadInfo();
-    const sheet = doc.sheetsByIndex[0]; // Menggunakan sheet yang sama dengan yang sudah ada
+    console.log(`Loaded spreadsheet: ${doc.title}`);
     
-    const rows = await sheet.getRows();
+    // Cari sheet dengan nama "ChatIds"
+    let chatIdSheet;
     
-    // Membuat Set untuk menyimpan ChatID unik
-    const uniqueChatIds = new Set();
-    
-    // Iterasi semua baris dan simpan ChatID yang unik
-    rows.forEach(row => {
-      const chatId = row['Chat ID'];
-      if (chatId) {
-        uniqueChatIds.add(chatId);
+    // Coba cari sheet dengan nama "ChatIds"
+    for (const sheet of Object.values(doc.sheetsById)) {
+      if (sheet.title === "ChatIds") {
+        chatIdSheet = sheet;
+        break;
       }
-    });
+    }
     
-    console.log(`Ditemukan ${uniqueChatIds.size} pengguna unik untuk notifikasi Rashdul Kiblat`);
-    return [...uniqueChatIds]; // Konversi Set ke Array
+    // Jika tidak ditemukan, gunakan sheet kedua (index 1)
+    if (!chatIdSheet) {
+      console.log('Sheet "ChatIds" tidak ditemukan, menggunakan sheet index 1');
+      chatIdSheet = doc.sheetsByIndex[1];
+    }
+    
+    console.log(`Using sheet: ${chatIdSheet.title}`);
+    
+    // Ambil semua baris
+    await chatIdSheet.loadCells();
+    const rows = await chatIdSheet.getRows();
+    console.log(`Fetched ${rows.length} rows from ChatIds sheet`);
+    
+    // Ambil ChatID dari kolom pertama
+    const chatIds = [];
+    
+    for (let i = 0; i < rows.length; i++) {
+      // Dapatkan nilai dari kolom pertama (A)
+      const chatId = rows[i]._rawData[0]; // Mengakses data mentah kolom pertama
+      
+      if (chatId && chatId.trim() !== '') {
+        chatIds.push(chatId.trim());
+        console.log(`Added Chat ID: ${chatId} from row ${i + 1}`);
+      }
+    }
+    
+    console.log(`Found ${chatIds.length} Chat IDs for notification`);
+    return chatIds;
   } catch (error) {
-    console.error('Error mendapatkan daftar ChatIDs:', error);
+    console.error('Error getting Chat IDs from dedicated sheet:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     return [];
   }
 }
 
-// Fungsi untuk mengirim notifikasi Rashdul Kiblat ke semua pengguna
+// Fungsi untuk mengirim notifikasi Rashdul Kiblat ke semua ChatID di Sheet "ChatIds"
 async function sendRashdulKiblatNotifications() {
-  const chatIds = await getUniqueUserChatIds();
+  const chatIds = await getChatIdsFromDedicatedSheet();
   
   if (chatIds.length === 0) {
-    console.log('Tidak ada pengguna untuk dikirim notifikasi');
+    console.log('Tidak ada ChatID untuk dikirim notifikasi');
     return {
       success: false,
-      message: 'Tidak ada pengguna untuk dikirim notifikasi'
+      message: 'Tidak ada ChatID untuk dikirim notifikasi'
     };
   }
   
@@ -530,18 +555,7 @@ async function sendRashdulKiblatNotifications() {
   const message = `
 🧭 *Rashdul Kiblat ${formattedDate}*
 
-Rashdul Kiblat (atau Istiwa A'zham) terjadi ketika matahari tepat berada di atas Ka'bah, sehingga bayangan benda tegak di tempat lain akan langsung mengarah ke Ka'bah. Ini adalah waktu terbaik untuk mengoreksi arah kiblat secara visual.
-
-Setiap tahun terjadi dua kali, yaitu:
-🔸 1. Tanggal 27-28 Mei
-Waktu: pukul 12:18 waktu Arab Saudi (UTC+3)
-→ pukul 16:18 WIB (UTC+7)
-
-🔸 2. Tanggal 15-16 Juli
-Waktu: pukul 12:27 waktu Arab Saudi (UTC+3)
-→ pukul 16:27 WIB (UTC+7)
-
-Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
+Sekarang matahari tepat di atas Ka'bah. Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
 
 ⏰ Waktu terbaik untuk pengukuran berkisar antara 5-10 menit setelah notifikasi ini.
 
@@ -554,7 +568,7 @@ _Notifikasi otomatis dari Bot Arah Kiblat_
     total: chatIds.length
   };
   
-  // Mengirim pesan ke setiap pengguna
+  // Mengirim pesan ke setiap ChatID
   for (const chatId of chatIds) {
     try {
       await bot.telegram.sendMessage(chatId, message, { 
@@ -577,14 +591,55 @@ _Notifikasi otomatis dari Bot Arah Kiblat_
   };
 }
 
-// Handler untuk webhook Vercel - Modifikasi dari handler yang sudah ada
+// Handler untuk webhook Vercel - Gunakan fungsi yang sudah dimodifikasi
 export default async (req, res) => {
   try {
     // Cek jika ini adalah request untuk rashdul kiblat dari cronjob
     if (req.query && req.query.rashdul === '1') {
       console.log('🟢 Menjalankan Rashdul Kiblat dari cron');
       
-      const result = await sendRashdulKiblatNotifications();
+      let result;
+      
+      // Jika ada parameter chat_id, gunakan itu
+      if (req.query.chat_id) {
+        console.log(`Using chat_id from query parameter: ${req.query.chat_id}`);
+        
+        const chatId = req.query.chat_id;
+        const message = `
+🧭 *Rashdul Kiblat ${new Date().toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        })}*
+
+Sekarang matahari tepat di atas Ka'bah. Letakkan benda tegak lurus dan lihat arah bayangannya. Gunakan ini untuk kalibrasi arah kiblat Anda.
+
+⏰ Waktu terbaik untuk pengukuran berkisar antara 5-10 menit setelah notifikasi ini.
+
+_Notifikasi otomatis dari Bot Arah Kiblat_
+        `;
+        
+        try {
+          await bot.telegram.sendMessage(chatId, message, { parse_mode: 'Markdown' });
+          result = {
+            success: 1,
+            failed: 0,
+            total: 1,
+            message: `Berhasil mengirim notifikasi ke chat ID: ${chatId}`
+          };
+        } catch (error) {
+          console.error(`Error sending to chat ID ${chatId}:`, error);
+          result = {
+            success: 0,
+            failed: 1,
+            total: 1,
+            message: `Gagal mengirim: ${error.message}`
+          };
+        }
+      } else {
+        // Gunakan fungsi yang mengambil dari sheet "ChatIds"
+        result = await sendRashdulKiblatNotifications();
+      }
       
       // Kirim response berdasarkan hasil
       if (result.success > 0) {
