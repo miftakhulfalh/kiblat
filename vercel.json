@@ -15,7 +15,7 @@
   "crons": [
     {
       "path": "/api/kiblat?rashdul=1",
-      "schedule": "50 9 3 5 *"   // 🔁 Uji coba 3 Mei 2025, 16:50 WIB
+      "schedule": "50 9 3 5 *"
     },
     {
       "path": "/api/kiblat?rashdul=1",
