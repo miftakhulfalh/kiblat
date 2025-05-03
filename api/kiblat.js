@@ -484,38 +484,42 @@ async function getChatIdsFromDedicatedSheet() {
   try {
     await doc.loadInfo();
     
-    // Cari sheet dengan nama "ChatIds"
+    // 1. Cari sheet dengan nama "ChatIds"
     const chatIdSheet = doc.sheetsByTitle['ChatIds'] || doc.sheetsByIndex[1];
     console.log(`Menggunakan sheet: "${chatIdSheet.title}"`);
 
-    // Pastikan header kolom sesuai
+    // 2. Muat header dan data
     await chatIdSheet.loadHeaderRow();
     const header = chatIdSheet.headerValues;
-    console.log('Header sheet:', header);
+    console.log('Header:', header);
 
-    // Ambil semua baris (termasuk header)
+    // 3. Ambil semua baris DATA (skip header)
     const rows = await chatIdSheet.getRows();
-    console.log(`Jumlah baris: ${rows.length}`);
+    console.log(`Jumlah baris data: ${rows.length}`);
 
-    // Ambil ChatID dari kolom pertama (asumsi kolom pertama adalah 'Chat ID')
+    // 4. Ekstrak Chat ID
     const chatIds = [];
     
     for (const row of rows) {
-      const chatId = row[header[0]]; // Akses menggunakan nama header
-      if (chatId && chatId.trim() !== '') {
-        console.log(`Menemukan Chat ID: ${chatId}`);
-        chatIds.push(chatId.trim());
+      // Gunakan nama kolom header pertama (misal: "Chat ID")
+      const chatId = row.get(header[0]);
+      
+      // Validasi
+      if (chatId && !isNaN(chatId) && chatId.toString().trim() !== '') {
+        console.log(`✅ Valid Chat ID: ${chatId}`);
+        chatIds.push(chatId.toString().trim());
+      } else {
+        console.log(`❌ Invalid Chat ID: '${chatId}' di baris ${row.rowNumber}`);
       }
     }
 
     console.log(`Total Chat ID valid: ${chatIds.length}`);
     return chatIds;
   } catch (error) {
-    console.error('Error mengambil Chat IDs:', error);
+    console.error('Error:', error);
     return [];
   }
 }
-
 // Fungsi untuk mengirim notifikasi Rashdul Kiblat ke semua ChatID di Sheet "ChatIds"
 async function sendRashdulKiblatNotifications() {
   const chatIds = await getChatIdsFromDedicatedSheet();
