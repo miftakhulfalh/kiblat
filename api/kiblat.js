@@ -602,31 +602,32 @@ async function sendUpdateBotNotifications() {
     };
   }
 
-  const message = `
-🔄 *Pembaruan Bot Arah Kiblat*
+const message = `
+<b>🔄 Pembaruan Bot Arah Kiblat</b>
 
 Kami telah melakukan pembaruan pada bot, termasuk:
 
-• Penyempurnaan tampilan arah kiblat
-• Notifikasi Rashdul Kiblat otomatis
-• Perbaikan bug dan peningkatan performa
+• Penyempurnaan tampilan arah kiblat dengan Custom Reply
+• Notifikasi Rashdul Kiblat Global otomatis
+• Visualisasi sederhana arah kiblat Anda
+• Perbaikan bug dan peningkatan performa  
 
-Terima kasih telah menggunakan bot ini 🙏
-Silakan ketik /start jika menu tidak muncul.
+Terima kasih telah menggunakan bot ini 🙏  
+Silakan ketik /start jika menu tidak muncul.  
 _________________________________
 
-We’ve made several improvements to the bot, including:
+<b>We’ve made several improvements to the bot, including:</b>
 
-• Enhanced Qibla direction interface with custom reply menu
-• Automatic Global Rashdul Qiblat notifications
-• Simple visual representation of your Qibla direction
-• Bug fixes and performance improvements
+• Enhanced Qibla direction interface with custom reply menu  
+• Automatic Global Rashdul Qiblat notifications  
+• Simple visual representation of your Qibla direction  
+• Bug fixes and performance improvements  
 
-Thank you for using this bot 🙏
+Thank you for using this bot 🙏  
 Type /start again if the menu does not appear.
 
-_-- Tim Pengembang Bot Arah Kiblat_
-  `;
+<i>-- Tim Pengembang Bot Arah Kiblat</i>
+`;
 
   const results = {
     success: 0,
@@ -637,7 +638,7 @@ _-- Tim Pengembang Bot Arah Kiblat_
   for (const chatId of chatIds) {
     try {
       await bot.telegram.sendMessage(chatId, message, {
-        parse_mode: 'Markdown',
+        parse_mode: 'HTML',
       });
       console.log(`✅ Notifikasi update terkirim ke ChatID: ${chatId}`);
       results.success++;
