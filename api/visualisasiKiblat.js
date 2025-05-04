@@ -1,7 +1,23 @@
 // visualisasiKiblat.js
-import { createCanvas } from '@napi-rs/canvas';
+import { createCanvas, registerFont } from '@napi-rs/canvas';
+import path from 'path';
+import fs from 'fs';
 
 export function generateQiblaVisualization(azimuthDeg) {
+    // Coba register font jika ada
+    try {
+        // Cek apakah file font ada
+        const fontPath = path.join(process.cwd(), 'fonts', 'arial.ttf');
+        if (fs.existsSync(fontPath)) {
+            registerFont(fontPath, { family: 'Arial' });
+            console.log('Font Arial berhasil diregistrasi');
+        } else {
+            console.log('File font tidak ditemukan di:', fontPath);
+        }
+    } catch (error) {
+        console.error('Gagal meregistrasi font:', error);
+    }
+
     const canvas = createCanvas(400, 400);
     const ctx = canvas.getContext('2d');
     
@@ -52,60 +68,54 @@ export function generateQiblaVisualization(azimuthDeg) {
     ctx.fillStyle = '#FF0000';
     ctx.fill();
 
-    // Teks arah mata angin dengan metode yang lebih kompatibel
-    drawCompassText(ctx);
+    // Gambar arah mata angin dengan metode alternatif
+    drawCompassDirections(ctx);
     
     // Label sudut azimuth
-    ctx.fillStyle = '#000000';
-    ctx.font = '14px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(`Arah Kiblat: ${Math.round(azimuthDeg)}°`, 200, 380);
+    drawAzimuthText(ctx, azimuthDeg);
 
     return canvas.toBuffer('image/png');
 }
 
-function drawCompassText(ctx) {
-    // Atur font dan gaya
+function drawCompassDirections(ctx) {
+    // Warna untuk titik dan teks arah mata angin
+    const markerRadius = 4;
+    const markerDist = 170;
+    ctx.fillStyle = '#0000FF';
+    
+    // Posisi-posisi titik arah mata angin
+    const directions = [
+        { x: 200, y: 30, letter: 'U' },   // Utara
+        { x: 370, y: 200, letter: 'T' },  // Timur
+        { x: 200, y: 370, letter: 'S' },  // Selatan
+        { x: 30, y: 200, letter: 'B' }    // Barat
+    ];
+    
+    // Gambar titik biru untuk setiap arah
+    directions.forEach(dir => {
+        // Gambar titik
+        ctx.beginPath();
+        ctx.arc(dir.x, dir.y, markerRadius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Gambar teks dengan metode kedua (langsung stroke teks)
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillStyle = '#0000FF';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        // Posisikan teks sedikit lebih jauh dari titik
+        const textOffsetX = dir.x === 30 ? -12 : (dir.x === 370 ? 12 : 0);
+        const textOffsetY = dir.y === 30 ? -12 : (dir.y === 370 ? 12 : 0);
+        
+        ctx.fillText(dir.letter, dir.x + textOffsetX, dir.y + textOffsetY);
+    });
+}
+
+function drawAzimuthText(ctx, azimuthDeg) {
     ctx.fillStyle = '#000000';
-    ctx.font = '18px Arial, sans-serif';
+    ctx.font = 'bold 16px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    
-    // Arah mata angin utama
-    ctx.fillText('U', 200, 35);
-    ctx.fillText('T', 365, 200);
-    ctx.fillText('S', 200, 365);
-    ctx.fillText('B', 35, 200);
-    
-    // Arah mata angin tambahan (opsional)
-    ctx.font = '14px Arial, sans-serif';
-    ctx.fillText('TL', 305, 95);
-    ctx.fillText('TG', 305, 305);
-    ctx.fillText('BD', 95, 305);
-    ctx.fillText('BL', 95, 95);
-    
-    // Lingkaran kecil untuk penanda arah utama
-    const dirMarkerRadius = 3;
-    const markerDist = 170;
-    
-    // Utara
-    ctx.beginPath();
-    ctx.arc(200, 200 - markerDist, dirMarkerRadius, 0, Math.PI * 2);
-    ctx.fillStyle = '#0000FF';
-    ctx.fill();
-    
-    // Timur
-    ctx.beginPath();
-    ctx.arc(200 + markerDist, 200, dirMarkerRadius, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Selatan
-    ctx.beginPath();
-    ctx.arc(200, 200 + markerDist, dirMarkerRadius, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Barat
-    ctx.beginPath();
-    ctx.arc(200 - markerDist, 200, dirMarkerRadius, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.fillText(`Arah Kiblat: ${Math.round(azimuthDeg)}°`, 200, 380);
 }
