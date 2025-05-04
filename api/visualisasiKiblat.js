@@ -1,23 +1,10 @@
 // visualisasiKiblat.js
 import pkg from '@napi-rs/canvas';
-const { createCanvas, registerFont } = pkg;
+const { createCanvas } = pkg;
 import path from 'path';
 import fs from 'fs';
 
 export function generateQiblaVisualization(azimuthDeg) {
-    // Coba register font jika ada
-    try {
-        // Cek apakah file font ada
-        const fontPath = path.join(process.cwd(), 'fonts', 'arial.ttf');
-        if (fs.existsSync(fontPath)) {
-            registerFont(fontPath, { family: 'Arial' });
-            console.log('Font Arial berhasil diregistrasi');
-        } else {
-            console.log('File font tidak ditemukan di:', fontPath);
-        }
-    } catch (error) {
-        console.error('Gagal meregistrasi font:', error);
-    }
 
     const canvas = createCanvas(400, 400);
     const ctx = canvas.getContext('2d');
