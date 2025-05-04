@@ -219,7 +219,7 @@ async function saveToSheet(rowData) {
       'Latitude DMS': rowData.latDMS,
       'Longitude DMS': rowData.lonDMS,
       'Kota': rowData.city,
-      'Negara': rowData.state,
+      'Provinsi': rowData.state,
       'Arah Kiblat': rowData.kiblatDMS,
       'Base Direction': rowData.baseDirection,
       'Qibla Direction': rowData.qiblaDirection,
