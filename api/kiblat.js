@@ -613,6 +613,17 @@ Kami telah melakukan pembaruan pada bot, termasuk:
 
 Terima kasih telah menggunakan bot ini 🙏
 Silakan ketik /start jika menu tidak muncul.
+_________________________________
+
+We’ve made several improvements to the bot, including:
+
+• Enhanced Qibla direction interface with custom reply menu
+• Automatic Global Rashdul Qiblat notifications
+• Simple visual representation of your Qibla direction
+• Bug fixes and performance improvements
+
+Thank you for using this bot 🙏
+Type /start again if the menu does not appear.
 
 _-- Tim Pengembang Bot Arah Kiblat_
   `;
