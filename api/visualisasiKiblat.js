@@ -1,5 +1,6 @@
 // visualisasiKiblat.js
-import { createCanvas, registerFont } from '@napi-rs/canvas';
+import pkg from '@napi-rs/canvas';
+const { createCanvas, registerFont } = pkg;
 import path from 'path';
 import fs from 'fs';
 
@@ -80,7 +81,6 @@ export function generateQiblaVisualization(azimuthDeg) {
 function drawCompassDirections(ctx) {
     // Warna untuk titik dan teks arah mata angin
     const markerRadius = 4;
-    const markerDist = 170;
     ctx.fillStyle = '#0000FF';
     
     // Posisi-posisi titik arah mata angin
@@ -98,24 +98,116 @@ function drawCompassDirections(ctx) {
         ctx.arc(dir.x, dir.y, markerRadius, 0, Math.PI * 2);
         ctx.fill();
         
-        // Gambar teks dengan metode kedua (langsung stroke teks)
-        ctx.font = 'bold 18px sans-serif';
-        ctx.fillStyle = '#0000FF';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        
-        // Posisikan teks sedikit lebih jauh dari titik
-        const textOffsetX = dir.x === 30 ? -12 : (dir.x === 370 ? 12 : 0);
-        const textOffsetY = dir.y === 30 ? -12 : (dir.y === 370 ? 12 : 0);
-        
-        ctx.fillText(dir.letter, dir.x + textOffsetX, dir.y + textOffsetY);
+        // Metode alternatif untuk menggambar teks tanpa bergantung pada font spesifik
+        drawTextManually(ctx, dir.letter, dir.x, dir.y);
     });
 }
 
+function drawTextManually(ctx, letter, x, y) {
+    // Buat teks dengan garis (line drawing) agar tidak bergantung pada font
+    ctx.strokeStyle = '#0000FF';
+    ctx.lineWidth = 2;
+    
+    // Offset untuk menempatkan teks di luar titik
+    const offsetX = (x === 30) ? -15 : ((x === 370) ? 15 : 0);
+    const offsetY = (y === 30) ? -15 : ((y === 370) ? 15 : 0);
+    
+    // Posisi teks yang sudah di-offset
+    const textX = x + offsetX;
+    const textY = y + offsetY;
+    
+    // Gambar huruf berdasarkan kasus
+    switch(letter) {
+        case 'U': // UTARA
+            // Garis vertikal
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY + 8);
+            ctx.lineTo(textX - 5, textY - 8);
+            ctx.stroke();
+            
+            // Garis diagonal
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY - 8);
+            ctx.lineTo(textX + 5, textY + 8);
+            ctx.stroke();
+            
+            // Garis vertikal kanan
+            ctx.beginPath();
+            ctx.moveTo(textX + 5, textY + 8);
+            ctx.lineTo(textX + 5, textY - 8);
+            ctx.stroke();
+            break;
+            
+        case 'T': // TIMUR
+            // Garis horizontal atas
+            ctx.beginPath();
+            ctx.moveTo(textX - 8, textY - 8);
+            ctx.lineTo(textX + 8, textY - 8);
+            ctx.stroke();
+            
+            // Garis vertikal tengah
+            ctx.beginPath();
+            ctx.moveTo(textX, textY - 8);
+            ctx.lineTo(textX, textY + 8);
+            ctx.stroke();
+            break;
+            
+        case 'S': // SELATAN
+            // Kurva S
+            ctx.beginPath();
+            ctx.moveTo(textX + 5, textY - 8);
+            ctx.lineTo(textX - 3, textY - 8);
+            ctx.lineTo(textX - 5, textY - 4);
+            ctx.lineTo(textX - 3, textY);
+            ctx.lineTo(textX + 5, textY);
+            ctx.lineTo(textX + 7, textY + 4);
+            ctx.lineTo(textX + 5, textY + 8);
+            ctx.lineTo(textX - 5, textY + 8);
+            ctx.stroke();
+            break;
+            
+        case 'B': // BARAT
+            // Garis vertikal kiri
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY - 8);
+            ctx.lineTo(textX - 5, textY + 8);
+            ctx.stroke();
+            
+            // Kurva B
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY - 8);
+            ctx.lineTo(textX + 3, textY - 8);
+            ctx.lineTo(textX + 5, textY - 6);
+            ctx.lineTo(textX + 5, textY - 2);
+            ctx.lineTo(textX + 3, textY);
+            ctx.lineTo(textX - 5, textY);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY);
+            ctx.lineTo(textX + 3, textY);
+            ctx.lineTo(textX + 5, textY + 2);
+            ctx.lineTo(textX + 5, textY + 6);
+            ctx.lineTo(textX + 3, textY + 8);
+            ctx.lineTo(textX - 5, textY + 8);
+            ctx.stroke();
+            break;
+    }
+}
+
 function drawAzimuthText(ctx, azimuthDeg) {
+    // Menggambar teks azimuth secara manual
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1.5;
+    
+    const text = `ARAH KIBLAT: ${Math.round(azimuthDeg)}°`;
+    const x = 200;
+    const y = 380;
+    
+    // Menggunakan fillText sebagai alternatif jika registerFont tidak berhasil
     ctx.fillStyle = '#000000';
-    ctx.font = 'bold 16px sans-serif';
+    ctx.font = '14px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`Arah Kiblat: ${Math.round(azimuthDeg)}°`, 200, 380);
+    ctx.fillText(text, x, y);
 }
