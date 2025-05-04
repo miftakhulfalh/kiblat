@@ -591,6 +591,60 @@ _Notifikasi otomatis dari Bot Arah Kiblat_
   };
 }
 
+async function sendUpdateBotNotifications() {
+  const chatIds = await getChatIdsFromDedicatedSheet();
+  
+  if (chatIds.length === 0) {
+    console.log('Tidak ada ChatID untuk dikirim notifikasi pembaruan');
+    return {
+      success: false,
+      message: 'Tidak ada ChatID untuk dikirim notifikasi pembaruan'
+    };
+  }
+
+  const message = `
+🔄 *Pembaruan Bot Arah Kiblat*
+
+Kami telah melakukan pembaruan pada bot, termasuk:
+
+• Penyempurnaan tampilan arah kiblat
+• Notifikasi Rashdul Kiblat otomatis
+• Perbaikan bug dan peningkatan performa
+
+Terima kasih telah menggunakan bot ini 🙏
+Silakan ketik /start jika menu tidak muncul.
+
+_-- Tim Pengembang Bot Arah Kiblat_
+  `;
+
+  const results = {
+    success: 0,
+    failed: 0,
+    total: chatIds.length
+  };
+
+  for (const chatId of chatIds) {
+    try {
+      await bot.telegram.sendMessage(chatId, message, {
+        parse_mode: 'Markdown',
+      });
+      console.log(`✅ Notifikasi update terkirim ke ChatID: ${chatId}`);
+      results.success++;
+    } catch (error) {
+      console.error(`❌ Gagal kirim update ke ChatID: ${chatId}`, error.message);
+      results.failed++;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  return {
+    ...results,
+    message: `Update bot terkirim ke ${results.success} dari ${results.total} chat ID.`
+  };
+}
+
+
 // Handler untuk webhook Vercel - Gunakan fungsi yang sudah dimodifikasi
 export default async (req, res) => {
   try {
@@ -665,6 +719,26 @@ _Notifikasi otomatis dari Bot Arah Kiblat_
         });
       }
     }
+
+    // Tambahan endpoint untuk update bot
+    if (req.query && req.query.update === '1') {
+      console.log('🟢 Menjalankan notifikasi pembaruan bot dari endpoint');
+    
+      const result = await sendUpdateBotNotifications();
+    
+      if (result.success > 0) {
+        return res.status(200).json({
+          status: 'success',
+          ...result
+        });
+      } else {
+        return res.status(400).json({
+          status: 'failed',
+          ...result
+        });
+      }
+    }
+
 
     // Jika bukan request rashdul, proses sebagai webhook normal
     if (req.method === 'POST') {
