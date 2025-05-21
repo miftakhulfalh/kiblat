@@ -126,25 +126,20 @@ function drawTextManually(ctx, letter, x, y) {
             break;
 
             
-        case 'E': // EAST (TIMUR)
+        case 'E': // Sekarang diganti untuk huruf T
             // Garis horizontal atas
             ctx.beginPath();
             ctx.moveTo(textX - 5, textY - 8);
             ctx.lineTo(textX + 5, textY - 8);
             ctx.stroke();
-            
-            // Garis horizontal tengah
+        
+            // Garis vertikal tengah
             ctx.beginPath();
-            ctx.moveTo(textX - 5, textY);
-            ctx.lineTo(textX + 5, textY);
-            ctx.stroke();
-            
-            // Garis horizontal bawah
-            ctx.beginPath();
-            ctx.moveTo(textX - 5, textY + 8);
-            ctx.lineTo(textX + 5, textY + 8);
+            ctx.moveTo(textX, textY - 8);
+            ctx.lineTo(textX, textY + 8);
             ctx.stroke();
             break;
+
             
         case 'S': // SOUTH (SELATAN)
             // Kurva S
