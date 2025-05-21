@@ -72,10 +72,10 @@ function drawCompassDirections(ctx) {
     
     // Posisi-posisi titik arah mata angin (dalam Bahasa Inggris)
     const directions = [
-        { x: 200, y: 30, letter: 'N' },   // North (Utara)
-        { x: 370, y: 200, letter: 'E' },  // East (Timur)
+        { x: 200, y: 30, letter: 'U' },   // North (Utara)
+        { x: 370, y: 200, letter: 'T' },  // East (Timur)
         { x: 200, y: 370, letter: 'S' },  // South (Selatan)
-        { x: 30, y: 200, letter: 'W' }    // West (Barat)
+        { x: 30, y: 200, letter: 'B' }    // West (Barat)
     ];
     
     // Gambar titik biru untuk setiap arah
