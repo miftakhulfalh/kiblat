@@ -70,12 +70,12 @@ function drawCompassDirections(ctx) {
     const markerRadius = 4;
     ctx.fillStyle = '#0000FF';
     
-    // Posisi-posisi titik arah mata angin
+    // Posisi-posisi titik arah mata angin (dalam Bahasa Inggris)
     const directions = [
-        { x: 200, y: 30, letter: 'U' },   // Utara (memastikan menggunakan U bukan N)
-        { x: 370, y: 200, letter: 'T' },  // Timur
-        { x: 200, y: 370, letter: 'S' },  // Selatan
-        { x: 30, y: 200, letter: 'B' }    // Barat
+        { x: 200, y: 30, letter: 'N' },   // North (Utara)
+        { x: 370, y: 200, letter: 'E' },  // East (Timur)
+        { x: 200, y: 370, letter: 'S' },  // South (Selatan)
+        { x: 30, y: 200, letter: 'W' }    // West (Barat)
     ];
     
     // Gambar titik biru untuk setiap arah
@@ -105,8 +105,8 @@ function drawTextManually(ctx, letter, x, y) {
     
     // Gambar huruf berdasarkan kasus
     switch(letter) {
-        case 'U': // UTARA
-            // Garis vertikal
+        case 'N': // NORTH (UTARA)
+            // Garis vertikal kiri
             ctx.beginPath();
             ctx.moveTo(textX - 5, textY + 8);
             ctx.lineTo(textX - 5, textY - 8);
@@ -125,21 +125,27 @@ function drawTextManually(ctx, letter, x, y) {
             ctx.stroke();
             break;
             
-        case 'T': // TIMUR
+        case 'E': // EAST (TIMUR)
             // Garis horizontal atas
             ctx.beginPath();
-            ctx.moveTo(textX - 8, textY - 8);
-            ctx.lineTo(textX + 8, textY - 8);
+            ctx.moveTo(textX - 5, textY - 8);
+            ctx.lineTo(textX + 5, textY - 8);
             ctx.stroke();
             
-            // Garis vertikal tengah
+            // Garis horizontal tengah
             ctx.beginPath();
-            ctx.moveTo(textX, textY - 8);
-            ctx.lineTo(textX, textY + 8);
+            ctx.moveTo(textX - 5, textY);
+            ctx.lineTo(textX + 5, textY);
+            ctx.stroke();
+            
+            // Garis horizontal bawah
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY + 8);
+            ctx.lineTo(textX + 5, textY + 8);
             ctx.stroke();
             break;
             
-        case 'S': // SELATAN
+        case 'S': // SOUTH (SELATAN)
             // Kurva S
             ctx.beginPath();
             ctx.moveTo(textX + 5, textY - 8);
@@ -153,30 +159,14 @@ function drawTextManually(ctx, letter, x, y) {
             ctx.stroke();
             break;
             
-        case 'B': // BARAT
-            // Garis vertikal kiri
+        case 'W': // WEST (BARAT)
+            // Bentuk huruf W
             ctx.beginPath();
-            ctx.moveTo(textX - 5, textY - 8);
-            ctx.lineTo(textX - 5, textY + 8);
-            ctx.stroke();
-            
-            // Kurva B
-            ctx.beginPath();
-            ctx.moveTo(textX - 5, textY - 8);
-            ctx.lineTo(textX + 3, textY - 8);
-            ctx.lineTo(textX + 5, textY - 6);
-            ctx.lineTo(textX + 5, textY - 2);
-            ctx.lineTo(textX + 3, textY);
-            ctx.lineTo(textX - 5, textY);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.moveTo(textX - 5, textY);
-            ctx.lineTo(textX + 3, textY);
-            ctx.lineTo(textX + 5, textY + 2);
-            ctx.lineTo(textX + 5, textY + 6);
-            ctx.lineTo(textX + 3, textY + 8);
-            ctx.lineTo(textX - 5, textY + 8);
+            ctx.moveTo(textX - 8, textY - 8);
+            ctx.lineTo(textX - 4, textY + 8);
+            ctx.lineTo(textX, textY);
+            ctx.lineTo(textX + 4, textY + 8);
+            ctx.lineTo(textX + 8, textY - 8);
             ctx.stroke();
             break;
     }
