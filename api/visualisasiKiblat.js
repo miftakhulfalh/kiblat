@@ -155,27 +155,24 @@ function drawTextManually(ctx, letter, x, y) {
             ctx.stroke();
             break;
             
-        case 'W': // Sekarang diganti untuk huruf B
+        case 'W': // Sekarang jadi huruf B (lebih membulat)
             // Garis vertikal kiri
             ctx.beginPath();
             ctx.moveTo(textX - 5, textY - 8);
             ctx.lineTo(textX - 5, textY + 8);
             ctx.stroke();
         
-            // Lengkungan atas (diwakili dengan 2 garis melengkung)
+            // Setengah lingkaran atas
             ctx.beginPath();
-            ctx.moveTo(textX - 5, textY - 8);
-            ctx.lineTo(textX + 4, textY - 6);
-            ctx.lineTo(textX - 5, textY);
+            ctx.arc(textX - 2, textY - 4.5, 5, Math.PI * 1.5, Math.PI * 0.5, false);
             ctx.stroke();
         
-            // Lengkungan bawah (juga 2 garis)
+            // Setengah lingkaran bawah
             ctx.beginPath();
-            ctx.moveTo(textX - 5, textY);
-            ctx.lineTo(textX + 4, textY + 6);
-            ctx.lineTo(textX - 5, textY + 8);
+            ctx.arc(textX - 2, textY + 4.5, 5, Math.PI * 1.5, Math.PI * 0.5, false);
             ctx.stroke();
             break;
+
 
     }
 }
