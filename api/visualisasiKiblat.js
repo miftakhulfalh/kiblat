@@ -105,39 +105,43 @@ function drawTextManually(ctx, letter, x, y) {
     
     // Gambar huruf berdasarkan kasus
     switch(letter) {
-        case 'U': // untuk huruf U
+        case 'N': // NORTH (UTARA)
             // Garis vertikal kiri
             ctx.beginPath();
-            ctx.moveTo(textX - 5, textY - 8);
-            ctx.lineTo(textX - 5, textY + 5);
+            ctx.moveTo(textX - 5, textY + 8);
+            ctx.lineTo(textX - 5, textY - 8);
             ctx.stroke();
-        
+            
+            // Garis diagonal
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY - 8);
+            ctx.lineTo(textX + 5, textY + 8);
+            ctx.stroke();
+            
             // Garis vertikal kanan
             ctx.beginPath();
-            ctx.moveTo(textX + 5, textY - 8);
-            ctx.lineTo(textX + 5, textY + 5);
-            ctx.stroke();
-        
-            // Garis bawah penghubung
-            ctx.beginPath();
-            ctx.moveTo(textX - 5, textY + 5);
-            ctx.lineTo(textX + 5, textY + 5);
+            ctx.moveTo(textX + 5, textY + 8);
+            ctx.lineTo(textX + 5, textY - 8);
             ctx.stroke();
             break;
-
-
             
-        case 'T': // TIMUR
+        case 'E': // EAST (TIMUR)
             // Garis horizontal atas
             ctx.beginPath();
-            ctx.moveTo(textX - 8, textY - 8);
-            ctx.lineTo(textX + 8, textY - 8);
+            ctx.moveTo(textX - 5, textY - 8);
+            ctx.lineTo(textX + 5, textY - 8);
             ctx.stroke();
             
-            // Garis vertikal tengah
+            // Garis horizontal tengah
             ctx.beginPath();
-            ctx.moveTo(textX, textY - 8);
-            ctx.lineTo(textX, textY + 8);
+            ctx.moveTo(textX - 5, textY);
+            ctx.lineTo(textX + 5, textY);
+            ctx.stroke();
+            
+            // Garis horizontal bawah
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY + 8);
+            ctx.lineTo(textX + 5, textY + 8);
             ctx.stroke();
             break;
             
