@@ -155,30 +155,14 @@ function drawTextManually(ctx, letter, x, y) {
             ctx.stroke();
             break;
             
-        case 'B': // BARAT
-            // Garis vertikal kiri
+        case 'W': // WEST (BARAT)
+            // Bentuk huruf W
             ctx.beginPath();
-            ctx.moveTo(textX - 5, textY - 8);
-            ctx.lineTo(textX - 5, textY + 8);
-            ctx.stroke();
-            
-            // Kurva B
-            ctx.beginPath();
-            ctx.moveTo(textX - 5, textY - 8);
-            ctx.lineTo(textX + 3, textY - 8);
-            ctx.lineTo(textX + 5, textY - 6);
-            ctx.lineTo(textX + 5, textY - 2);
-            ctx.lineTo(textX + 3, textY);
-            ctx.lineTo(textX - 5, textY);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.moveTo(textX - 5, textY);
-            ctx.lineTo(textX + 3, textY);
-            ctx.lineTo(textX + 5, textY + 2);
-            ctx.lineTo(textX + 5, textY + 6);
-            ctx.lineTo(textX + 3, textY + 8);
-            ctx.lineTo(textX - 5, textY + 8);
+            ctx.moveTo(textX - 8, textY - 8);
+            ctx.lineTo(textX - 4, textY + 8);
+            ctx.lineTo(textX, textY);
+            ctx.lineTo(textX + 4, textY + 8);
+            ctx.lineTo(textX + 8, textY - 8);
             ctx.stroke();
             break;
     }
