@@ -105,25 +105,26 @@ function drawTextManually(ctx, letter, x, y) {
     
     // Gambar huruf berdasarkan kasus
     switch(letter) {
-        case 'N': // NORTH (UTARA)
+        case 'N': // Sekarang diganti untuk huruf U
             // Garis vertikal kiri
             ctx.beginPath();
-            ctx.moveTo(textX - 5, textY + 8);
-            ctx.lineTo(textX - 5, textY - 8);
-            ctx.stroke();
-            
-            // Garis diagonal
-            ctx.beginPath();
             ctx.moveTo(textX - 5, textY - 8);
-            ctx.lineTo(textX + 5, textY + 8);
+            ctx.lineTo(textX - 5, textY + 5);
             ctx.stroke();
-            
+        
             // Garis vertikal kanan
             ctx.beginPath();
-            ctx.moveTo(textX + 5, textY + 8);
-            ctx.lineTo(textX + 5, textY - 8);
+            ctx.moveTo(textX + 5, textY - 8);
+            ctx.lineTo(textX + 5, textY + 5);
+            ctx.stroke();
+        
+            // Garis bawah penghubung
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY + 5);
+            ctx.lineTo(textX + 5, textY + 5);
             ctx.stroke();
             break;
+
             
         case 'E': // EAST (TIMUR)
             // Garis horizontal atas
