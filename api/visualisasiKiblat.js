@@ -105,7 +105,7 @@ function drawTextManually(ctx, letter, x, y) {
     
     // Gambar huruf berdasarkan kasus
     switch(letter) {
-        case 'N': // Sekarang diganti untuk huruf U
+        case 'U': // untuk huruf U
             // Garis vertikal kiri
             ctx.beginPath();
             ctx.moveTo(textX - 5, textY - 8);
@@ -127,32 +127,19 @@ function drawTextManually(ctx, letter, x, y) {
 
 
             
-         case 'E': // EAST (TIMUR)
-            // Garis vertikal kiri
-            ctx.beginPath();
-            ctx.moveTo(textX - 5, textY - 8);
-            ctx.lineTo(textX - 5, textY + 8);
-            ctx.stroke();
-        
+        case 'T': // TIMUR
             // Garis horizontal atas
             ctx.beginPath();
-            ctx.moveTo(textX - 5, textY - 8);
-            ctx.lineTo(textX + 5, textY - 8);
+            ctx.moveTo(textX - 8, textY - 8);
+            ctx.lineTo(textX + 8, textY - 8);
             ctx.stroke();
-        
-            // Garis horizontal tengah
+            
+            // Garis vertikal tengah
             ctx.beginPath();
-            ctx.moveTo(textX - 5, textY);
-            ctx.lineTo(textX + 3, textY);
-            ctx.stroke();
-        
-            // Garis horizontal bawah
-            ctx.beginPath();
-            ctx.moveTo(textX - 5, textY + 8);
-            ctx.lineTo(textX + 5, textY + 8);
+            ctx.moveTo(textX, textY - 8);
+            ctx.lineTo(textX, textY + 8);
             ctx.stroke();
             break;
-
             
         case 'S': // SOUTH (SELATAN)
             // Kurva S
@@ -168,14 +155,30 @@ function drawTextManually(ctx, letter, x, y) {
             ctx.stroke();
             break;
             
-        case 'W': // WEST (BARAT)
-            // Bentuk huruf W
+        case 'B': // BARAT
+            // Garis vertikal kiri
             ctx.beginPath();
-            ctx.moveTo(textX - 8, textY - 8);
-            ctx.lineTo(textX - 4, textY + 8);
-            ctx.lineTo(textX, textY);
-            ctx.lineTo(textX + 4, textY + 8);
-            ctx.lineTo(textX + 8, textY - 8);
+            ctx.moveTo(textX - 5, textY - 8);
+            ctx.lineTo(textX - 5, textY + 8);
+            ctx.stroke();
+            
+            // Kurva B
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY - 8);
+            ctx.lineTo(textX + 3, textY - 8);
+            ctx.lineTo(textX + 5, textY - 6);
+            ctx.lineTo(textX + 5, textY - 2);
+            ctx.lineTo(textX + 3, textY);
+            ctx.lineTo(textX - 5, textY);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY);
+            ctx.lineTo(textX + 3, textY);
+            ctx.lineTo(textX + 5, textY + 2);
+            ctx.lineTo(textX + 5, textY + 6);
+            ctx.lineTo(textX + 3, textY + 8);
+            ctx.lineTo(textX - 5, textY + 8);
             ctx.stroke();
             break;
     }
