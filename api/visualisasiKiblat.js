@@ -155,16 +155,28 @@ function drawTextManually(ctx, letter, x, y) {
             ctx.stroke();
             break;
             
-        case 'W': // WEST (BARAT)
-            // Bentuk huruf W
+        case 'W': // Sekarang diganti untuk huruf B
+            // Garis vertikal kiri
             ctx.beginPath();
-            ctx.moveTo(textX - 8, textY - 8);
-            ctx.lineTo(textX - 4, textY + 8);
-            ctx.lineTo(textX, textY);
-            ctx.lineTo(textX + 4, textY + 8);
-            ctx.lineTo(textX + 8, textY - 8);
+            ctx.moveTo(textX - 5, textY - 8);
+            ctx.lineTo(textX - 5, textY + 8);
+            ctx.stroke();
+        
+            // Lengkungan atas (diwakili dengan 2 garis melengkung)
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY - 8);
+            ctx.lineTo(textX + 4, textY - 6);
+            ctx.lineTo(textX - 5, textY);
+            ctx.stroke();
+        
+            // Lengkungan bawah (juga 2 garis)
+            ctx.beginPath();
+            ctx.moveTo(textX - 5, textY);
+            ctx.lineTo(textX + 4, textY + 6);
+            ctx.lineTo(textX - 5, textY + 8);
             ctx.stroke();
             break;
+
     }
 }
 
