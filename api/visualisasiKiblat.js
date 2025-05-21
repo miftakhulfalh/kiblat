@@ -105,7 +105,7 @@ function drawTextManually(ctx, letter, x, y) {
     
     // Gambar huruf berdasarkan kasus
     switch(letter) {
-        case 'N': // Sekarang diganti untuk huruf U
+        case 'U': // Sekarang diganti untuk huruf U
             // Garis vertikal kiri
             ctx.beginPath();
             ctx.moveTo(textX - 5, textY - 8);
@@ -126,7 +126,7 @@ function drawTextManually(ctx, letter, x, y) {
             break;
 
             
-        case 'E': // Sekarang diganti untuk huruf T
+        case 'T': // Sekarang diganti untuk huruf T
             // Garis horizontal atas
             ctx.beginPath();
             ctx.moveTo(textX - 5, textY - 8);
@@ -155,23 +155,34 @@ function drawTextManually(ctx, letter, x, y) {
             ctx.stroke();
             break;
             
-        case 'W': // Sekarang jadi huruf B (lebih membulat)
+        case 'B': // BARAT
             // Garis vertikal kiri
             ctx.beginPath();
-            ctx.moveTo(textX - 5, textY - 8);
-            ctx.lineTo(textX - 5, textY + 8);
+            ctx.moveTo(textX - 4, textY - 8);
+            ctx.lineTo(textX - 4, textY + 8);
             ctx.stroke();
-        
-            // Setengah lingkaran atas
+            
+            // Lengkungan atas
             ctx.beginPath();
-            ctx.arc(textX - 2, textY - 4.5, 5, Math.PI * 1.5, Math.PI * 0.5, false);
+            ctx.moveTo(textX - 4, textY - 8);
+            ctx.lineTo(textX + 3, textY - 8);
+            ctx.lineTo(textX + 5, textY - 6);
+            ctx.lineTo(textX + 5, textY - 2);
+            ctx.lineTo(textX + 3, textY);
+            ctx.lineTo(textX - 4, textY);
             ctx.stroke();
-        
-            // Setengah lingkaran bawah
+            
+            // Lengkungan bawah
             ctx.beginPath();
-            ctx.arc(textX - 2, textY + 4.5, 5, Math.PI * 1.5, Math.PI * 0.5, false);
+            ctx.moveTo(textX - 4, textY);
+            ctx.lineTo(textX + 3, textY);
+            ctx.lineTo(textX + 5, textY + 2);
+            ctx.lineTo(textX + 5, textY + 6);
+            ctx.lineTo(textX + 3, textY + 8);
+            ctx.lineTo(textX - 4, textY + 8);
             ctx.stroke();
             break;
+
 
 
     }
