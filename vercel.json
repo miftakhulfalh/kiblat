@@ -1,18 +1,18 @@
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/*.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/api/kiblat.js"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+ {
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/kiblat.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
