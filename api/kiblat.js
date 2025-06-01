@@ -355,7 +355,9 @@ Anda memiliki dua pilihan:
   .resize(true)
   .oneTime(false); // ditampilkan terus
 
-  return ctx.replyWithHTML(welcomeMessage, keyboard).then(() => {
+  return ctx.replyWithSticker("CAACAgUAAxkBAAICimg78DTx28_9EouZJ8qJMQ2W78O5AAJcGQACsNvgVXh-AuYaUqKoNgQ").then(() => {
+    return ctx.replyWithHTML(welcomeMessage, keyboard);
+  }).then(() => {
     return ctx.reply('Menu utama:', replyKeyboard);
   });
 });
